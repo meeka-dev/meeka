@@ -3,3 +3,6 @@ out
 
 .gradle
 build
+
+application-*.yml
+!*.template.yml
