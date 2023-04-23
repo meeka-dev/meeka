@@ -29,7 +29,7 @@ class ExceptionControllerAdviceTest {
 
     @ParameterizedTest
     @MethodSource("paramsProviderForBusinessExceptionHandlerTest")
-    void should_return_error_info_when_controller_throw_a_business_exception(
+    void should_return_error_info_when_controller_throws_a_business_exception(
             String errorCode,
             List<String> args,
             Locale locale,
@@ -65,7 +65,7 @@ class ExceptionControllerAdviceTest {
 
     @ParameterizedTest
     @MethodSource("paramsProviderForSystemExceptionHandlerTest")
-    void should_return_error_info_when_controller_throw_a_system_exception(
+    void should_return_error_info_when_controller_throws_a_system_exception(
             String errorCode,
             String description,
             String expectedMessage
