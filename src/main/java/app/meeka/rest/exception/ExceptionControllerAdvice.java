@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.internalServerError;
 
 @ControllerAdvice
@@ -34,7 +35,7 @@ public class ExceptionControllerAdvice {
                 DEFAULT_BUSINESS_EXCEPTION_MESSAGE_TEMPLATE.formatted(exception.errorCode, request.getLocale()),
                 request.getLocale()
         );
-        return ResponseEntity.badRequest().body(new ErrorResponse(
+        return badRequest().body(new ErrorResponse(
                 exception.errorCode,
                 errorMessage
         ));
