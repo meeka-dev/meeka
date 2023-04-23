@@ -1,4 +1,4 @@
-package app.meeka.rest.exception;
+package app.meeka.core.rest.exception;
 
 import app.meeka.core.exception.BusinessException;
 import app.meeka.core.exception.SystemException;

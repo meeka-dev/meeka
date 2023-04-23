@@ -1,4 +1,4 @@
-package app.meeka.rest.exception;
+package app.meeka.core.rest.exception;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
 
-import static app.meeka.rest.exception.ExceptionControllerAdvice.DEFAULT_BUSINESS_EXCEPTION_MESSAGE_TEMPLATE;
-import static app.meeka.rest.exception.ExceptionControllerAdvice.SYSTEM_EXCEPTION_MESSAGE;
+import static app.meeka.core.rest.exception.ExceptionControllerAdvice.DEFAULT_BUSINESS_EXCEPTION_MESSAGE_TEMPLATE;
+import static app.meeka.core.rest.exception.ExceptionControllerAdvice.SYSTEM_EXCEPTION_MESSAGE;
 import static java.util.Collections.emptyList;
 import static java.util.Locale.CHINESE;
 import static java.util.Locale.ENGLISH;
