@@ -1,3 +1,6 @@
 spring:
   messages:
     basename: messages.test-exception
+  jpa:
+    open-in-view: off
+    show-sql: true
