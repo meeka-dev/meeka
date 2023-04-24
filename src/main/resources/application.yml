@@ -1,3 +1,5 @@
 spring:
   messages:
     basename: messages.exception
+server:
+  port: 8009

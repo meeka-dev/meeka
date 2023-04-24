@@ -22,6 +22,7 @@ dependencies {
 
     runtimeOnly("com.mysql:mysql-connector-j:8.0.33")
     runtimeOnly("org.flywaydb:flyway-core:9.16.3")
+    implementation("cn.hutool:hutool-all:5.8.16")
 }
 
 java {
