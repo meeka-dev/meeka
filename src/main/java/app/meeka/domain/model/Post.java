@@ -16,6 +16,7 @@ public class Post {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @SuppressWarnings("unused")
     private Long id;
     private Long authorId;
     private String title;
@@ -40,6 +41,10 @@ public class Post {
         this.favours = 0;
         this.createdAt = now();
         this.lastEditedAt = this.createdAt;
+    }
+
+    public PostInfo getInfo() {
+        return new PostInfo(this.authorId, this.cover, this.title, this.content);
     }
 
     public Long getId() {
