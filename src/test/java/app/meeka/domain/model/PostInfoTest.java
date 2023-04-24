@@ -11,7 +11,7 @@ class PostInfoTest {
 
     @Test
     void should_return_false_when_judging_post_cover_given_an_invalid_cover_url() {
-        var postInfo = newPostInfo().withContent("A invalid post cover url").build();
+        var postInfo = newPostInfo().withCover("A invalid post cover url").build();
         assertThat(postInfo.isValid(), is(false));
     }
 
