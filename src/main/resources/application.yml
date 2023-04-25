@@ -1,5 +1,10 @@
 spring:
   messages:
     basename: messages.exception
+    reids:
+      database:
+      host:
+      port:
+      password:
 server:
   port: 8009
