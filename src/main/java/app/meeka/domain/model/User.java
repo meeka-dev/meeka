@@ -17,7 +17,6 @@ public class User {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
-    private String phone;
     private String email;
     private String password;
     private String nikeName;
@@ -45,7 +44,6 @@ public class User {
         if (!userInfo.isValid()) {
             throw new InvalidUserInfoException();
         }
-        this.phone = userInfo.phone();
         this.email = userInfo.email();
         this.password = "";
         this.nikeName = "用户"+ RandomUtil.randomString(10);
@@ -62,10 +60,6 @@ public class User {
 
     public Long getId() {
         return id;
-    }
-
-    public String getPhone() {
-        return phone;
     }
 
     public String getEmail() {

@@ -1,7 +1,6 @@
 CREATE TABLE `user`
 (
     `id`          bigint(20) PRIMARY KEY AUTO_INCREMENT,
-    `phone`       varchar(11)     NOT NULL,
     `email`       varchar(32)    NULL     DEFAULT '',
     `password`    varchar(128)    NULL     DEFAULT '',
     `nick_name`   varchar(32)     NULL     DEFAULT '',
