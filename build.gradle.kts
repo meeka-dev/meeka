@@ -16,14 +16,14 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation ("org.springframework.boot:spring-boot-starter-redis")
     implementation("org.flywaydb:flyway-mysql")
+    implementation("cn.hutool:hutool-all:5.8.16")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     runtimeOnly("com.mysql:mysql-connector-j:8.0.33")
     runtimeOnly("org.flywaydb:flyway-core:9.16.3")
-    implementation("cn.hutool:hutool-all:5.8.16")
-    implementation ("org.springframework.boot:spring-boot-starter-redis:1.3.5.RELEASE")
 }
 
 java {
