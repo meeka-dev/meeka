@@ -1,7 +1,7 @@
 spring:
   messages:
     basename: messages.exception
-    reids:
+    redis:
       database:
       host:
       port:
