@@ -7,6 +7,6 @@ CREATE TABLE `post`
     `content`        text         NOT NULL,
     `status`         tinyint      NOT NULL DEFAULT 0,
     `favours`        int          NOT NULL DEFAULT 0,
-    `created_at`     datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `created_at`     datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `last_edited_at` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
