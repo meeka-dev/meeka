@@ -25,7 +25,7 @@ public class UserLoginApplicationService {
     public UserLoginApplicationService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-//todo 邮箱验证码注册&登录
+// todo 邮箱验证码注册&登录
     public UserCreatedResult userLoginWithCode(CreateUserCommand userCommand) throws InvalidUserInfoException {
         return new UserCreatedResult(1L);
     }
@@ -36,7 +36,7 @@ public class UserLoginApplicationService {
         var user=new User(new UserInfo(email));
         String code= RandomUtil.randomNumbers(6);
         stringRedisTemplate.opsForValue().set(LOGIN_CODE_KEY+email,code,LOGIN_CODE_TTL, TimeUnit.MINUTES);
-        //todo 发送验证码
+        // todo 发送验证码
         return true;
     }
 }
