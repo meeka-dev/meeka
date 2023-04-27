@@ -9,6 +9,7 @@ import app.meeka.domain.exception.InvalidUserInfoException;
 import app.meeka.domain.model.User;
 import app.meeka.domain.model.UserInfo;
 import app.meeka.domain.repository.UserRepository;
+import app.meeka.utils.MailUtils;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.lang.UUID;
@@ -21,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static app.meeka.utils.MailUtils.CODE_INFORMATION;
+import static app.meeka.utils.MailUtils.CODE_MESSAGE;
 import static app.meeka.utils.RedisConstants.*;
 
 @Service
@@ -57,11 +60,11 @@ public class UserLoginApplicationService {
         return Result.Success(token);
     }
 //keypoint 邮箱发送验证码
-    public boolean sendCodeByPhone(String email) throws InvalidUserInfoException {
+    public Result sendCodeByEmail(String email) throws InvalidUserInfoException {
         var user=new User(new UserInfo(email));
         String code= RandomUtil.randomNumbers(6);
         stringRedisTemplate.opsForValue().set(LOGIN_CODE_KEY+email,code,LOGIN_CODE_TTL, TimeUnit.MINUTES);
-        // todo 发送验证码
-        return true;
+        MailUtils.sendMail(email,CODE_MESSAGE+code+CODE_INFORMATION,CODE_MESSAGE);
+        return Result.Success("发送成功");
     }
 }
