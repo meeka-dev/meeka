@@ -11,6 +11,6 @@ CREATE TABLE `user`
     `birthday`    date            NULL     DEFAULT NULL,
     `city`        varchar(64)     NULL     DEFAULT '',
     `introduce`   varchar(128)    NULL DEFAULT NULL,
-    `create_time` timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `update_time` timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    `create_time` datetime        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `update_time` datetime        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

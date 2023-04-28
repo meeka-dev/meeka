@@ -15,6 +15,6 @@ public record UserInfo (
     }
 
     private boolean isEmailValid() {
-        return nonNull(this.email)&&Pattern.matches(email,EMAIL_REGEX);
+        return nonNull(this.email)&&Pattern.matches(EMAIL_REGEX,email);
     }
 }

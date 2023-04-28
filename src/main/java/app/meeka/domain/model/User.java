@@ -16,10 +16,11 @@ import static java.time.OffsetDateTime.now;
 public class User {
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @SuppressWarnings("unused")
     private Long id;
     private String email;
     private String password;
-    private String nikeName;
+    private String nickName;
     private String icon;
     private int fans;
     private int followee;
@@ -28,8 +29,9 @@ public class User {
     private OffsetDateTime birthday;
     private String city;
     private String introduce;
-    private OffsetDateTime creatTime;
+    private OffsetDateTime createTime;
     private OffsetDateTime updateTime;
+
 
     @PersistenceCreator
     protected User() {
@@ -46,7 +48,7 @@ public class User {
         }
         this.email = userInfo.email();
         this.password = "";
-        this.nikeName = "用户"+ RandomUtil.randomString(10);
+        this.nickName = "用户"+ RandomUtil.randomString(10);
         this.icon = null;
         this.fans = 0;
         this.followee = 0;
@@ -54,8 +56,8 @@ public class User {
         this.birthday = null;
         this.city = null;
         this.introduce = null;
-        this.creatTime = now();
-        this.updateTime = creatTime;
+        this.createTime = now();
+        this.updateTime = this.createTime;
     }
 
     public Long getId() {
@@ -71,7 +73,7 @@ public class User {
     }
 
     public String getNikeName() {
-        return nikeName;
+        return nickName;
     }
 
     public String getIcon() {
@@ -103,7 +105,7 @@ public class User {
     }
 
     public OffsetDateTime getCreatTime() {
-        return creatTime;
+        return createTime;
     }
 
     public OffsetDateTime getUpdateTime() {

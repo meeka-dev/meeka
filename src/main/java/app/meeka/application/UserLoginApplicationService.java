@@ -4,14 +4,12 @@ package app.meeka.application;
 import app.meeka.application.command.CreateUserCommand;
 import app.meeka.application.command.UserHolderCommand;
 import app.meeka.application.result.Result;
-import app.meeka.application.result.UserCreatedResult;
 import app.meeka.domain.exception.InvalidLoginCodeException;
 import app.meeka.domain.exception.InvalidUserInfoException;
 import app.meeka.domain.model.User;
 import app.meeka.domain.model.UserInfo;
 import app.meeka.domain.repository.UserRepository;
 import app.meeka.utils.MailUtils;
-import app.meeka.utils.UserHolder;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.lang.UUID;
@@ -51,16 +49,16 @@ public class UserLoginApplicationService {
         if (cacheCode==null||!cacheCode.equals(code)){
             throw new InvalidLoginCodeException();
         }
-        if (!userRepository.existsById(user.getId())) {
+        if (!userRepository.existsByEmail(user.getEmail())){
             userRepository.save(user);
         }
         String token = UUID.randomUUID().toString(true);
         UserHolderCommand userHolderCommand = BeanUtil.copyProperties(user, UserHolderCommand.class);
         //hashMap储存user信息
-        Map<String, Object> userMap = BeanUtil.beanToMap(userHolderCommand,new HashMap<>(),
+        Map<String,Object> userMap = BeanUtil.beanToMap(userHolderCommand,new HashMap<>(),
                 CopyOptions.create()
                         .setIgnoreNullValue(true)
-                        .setFieldValueEditor((filedName,filedValue)->filedValue.toString())
+                        .setFieldValueEditor((filedName,filedValue)->filedValue)
         );
         stringRedisTemplate.opsForHash().putAll(LOGIN_USER_KEY+token,userMap);
         stringRedisTemplate.expire(LOGIN_USER_KEY+token,LOGIN_USER_TTL,TimeUnit.MINUTES);

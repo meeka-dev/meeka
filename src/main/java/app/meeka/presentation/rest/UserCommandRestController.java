@@ -30,8 +30,8 @@ public class UserCommandRestController {
         return userLoginApplicationService.sendCodeByEmail(email);
     }
 
-    @PostMapping("/logout/{token}")
-    public Result userLogout(@PathVariable("token") String token){
+    @PostMapping("/logout")
+    public Result userLogout(@RequestParam("token") String token){
         return userLoginApplicationService.logout(token);
     }
 }
