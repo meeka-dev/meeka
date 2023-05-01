@@ -43,22 +43,23 @@ public class UserLoginApplicationService {
 
 // keypoint: 邮箱验证码注册&登录
     public Result userLoginWithCode(CreateUserCommand userCommand) throws InvalidUserInfoException, InvalidLoginCodeException {
-        var user=new User(new UserInfo(userCommand.email()));
+        var newUser=new User(new UserInfo(userCommand.email()));
         String cacheCode = stringRedisTemplate.opsForValue().get(LOGIN_CODE_KEY+userCommand.email());
         String code=userCommand.code();
         if (cacheCode==null||!cacheCode.equals(code)){
             throw new InvalidLoginCodeException();
         }
-        if (!userRepository.existsByEmail(user.getEmail())){
-            userRepository.save(user);
+        if (!userRepository.existsByEmail(newUser.getEmail())){
+            userRepository.save(newUser);
         }
+        User user = userRepository.findByEmail(newUser.getEmail());
         String token = UUID.randomUUID().toString(true);
         UserHolderCommand userHolderCommand = BeanUtil.copyProperties(user, UserHolderCommand.class);
         //hashMap储存user信息
         Map<String,Object> userMap = BeanUtil.beanToMap(userHolderCommand,new HashMap<>(),
                 CopyOptions.create()
                         .setIgnoreNullValue(true)
-                        .setFieldValueEditor((filedName,filedValue)->filedValue)
+                        .setFieldValueEditor((filedName,filedValue)->filedValue.toString())
         );
         stringRedisTemplate.opsForHash().putAll(LOGIN_USER_KEY+token,userMap);
         stringRedisTemplate.expire(LOGIN_USER_KEY+token,LOGIN_USER_TTL,TimeUnit.MINUTES);
@@ -74,7 +75,8 @@ public class UserLoginApplicationService {
     }
 //keypoint: 登出
     public Result logout(String token){
-        stringRedisTemplate.opsForHash().delete(LOGIN_USER_KEY+token);
+        System.out.println(token);
+        stringRedisTemplate.opsForHash().delete(LOGIN_USER_KEY+token,"id");
         return Result.Success("已登出");
     }
 }
