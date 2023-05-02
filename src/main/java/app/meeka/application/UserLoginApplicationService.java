@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import static app.meeka.utils.MailUtils.CODE_INFORMATION;
 import static app.meeka.utils.MailUtils.CODE_MESSAGE;
 import static app.meeka.utils.RedisConstants.*;
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 @Service
 @Transactional
@@ -41,42 +42,44 @@ public class UserLoginApplicationService {
     private StringRedisTemplate stringRedisTemplate;
 
 
-// keypoint: 邮箱验证码注册&登录
+    // keypoint: 邮箱验证码注册&登录
     public Result userLoginWithCode(CreateUserCommand userCommand) throws InvalidUserInfoException, InvalidLoginCodeException {
-        var newUser=new User(new UserInfo(userCommand.email()));
-        String cacheCode = stringRedisTemplate.opsForValue().get(LOGIN_CODE_KEY+userCommand.email());
-        String code=userCommand.code();
-        if (cacheCode==null||!cacheCode.equals(code)){
+        User newUser = new User(new UserInfo(userCommand.email()));
+        String cacheCode = stringRedisTemplate.opsForValue().get(LOGIN_CODE_KEY + userCommand.email());
+        String code = userCommand.code();
+        if (cacheCode == null || !cacheCode.equals(code)) {
             throw new InvalidLoginCodeException();
         }
-        if (!userRepository.existsByEmail(newUser.getEmail())){
+        if (!userRepository.existsByEmail(newUser.getEmail())) {
             userRepository.save(newUser);
         }
         User user = userRepository.findByEmail(newUser.getEmail());
         String token = UUID.randomUUID().toString(true);
         UserHolderCommand userHolderCommand = BeanUtil.copyProperties(user, UserHolderCommand.class);
         //hashMap储存user信息
-        Map<String,Object> userMap = BeanUtil.beanToMap(userHolderCommand,new HashMap<>(),
+        Map<String, Object> userMap = BeanUtil.beanToMap(userHolderCommand, new HashMap<>(),
                 CopyOptions.create()
                         .setIgnoreNullValue(true)
-                        .setFieldValueEditor((filedName,filedValue)->filedValue.toString())
+                        .setFieldValueEditor((filedName, filedValue) -> filedValue.toString())
         );
-        stringRedisTemplate.opsForHash().putAll(LOGIN_USER_KEY+token,userMap);
-        stringRedisTemplate.expire(LOGIN_USER_KEY+token,LOGIN_USER_TTL,TimeUnit.MINUTES);
+        stringRedisTemplate.opsForHash().putAll(LOGIN_USER_KEY + token, userMap);
+        stringRedisTemplate.expire(LOGIN_USER_KEY + token, LOGIN_USER_TTL, MINUTES);
         return Result.Success(token);
     }
-//keypoint: 邮箱发送验证码
+
+    //keypoint: 邮箱发送验证码
     public Result sendCodeByEmail(String email) throws InvalidUserInfoException {
-        var user=new User(new UserInfo(email));
-        String code= RandomUtil.randomNumbers(6);
-        stringRedisTemplate.opsForValue().set(LOGIN_CODE_KEY+email,code,LOGIN_CODE_TTL, TimeUnit.MINUTES);
-        MailUtils.sendMail(email,CODE_MESSAGE+code+CODE_INFORMATION,CODE_MESSAGE);
+        User user = new User(new UserInfo(email));
+        String code = RandomUtil.randomNumbers(6);
+        stringRedisTemplate.opsForValue().set(LOGIN_CODE_KEY + email, code, LOGIN_CODE_TTL, MINUTES);
+        MailUtils.sendMail(email, CODE_MESSAGE + code + CODE_INFORMATION, CODE_MESSAGE);
         return Result.Success("发送成功");
     }
-//keypoint: 登出
-    public Result logout(String token){
+
+    //keypoint: 登出
+    public Result logout(String token) {
         System.out.println(token);
-        stringRedisTemplate.opsForHash().delete(LOGIN_USER_KEY+token,"id");
+        stringRedisTemplate.opsForHash().delete(LOGIN_USER_KEY + token, "id");
         return Result.Success("已登出");
     }
 }

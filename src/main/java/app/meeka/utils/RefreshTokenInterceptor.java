@@ -10,7 +10,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+
+import static app.meeka.utils.RedisConstants.LOGIN_USER_KEY;
+import static app.meeka.utils.RedisConstants.LOGIN_USER_TTL;
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 @Component
 public class RefreshTokenInterceptor implements HandlerInterceptor {
@@ -29,7 +32,7 @@ public class RefreshTokenInterceptor implements HandlerInterceptor {
             return true;
         }
         Map<Object, Object> userMap = stringRedisTemplate
-                .opsForHash().entries(RedisConstants.LOGIN_USER_KEY + token);
+                .opsForHash().entries(LOGIN_USER_KEY + token.split(" ")[1]);
         if (userMap.isEmpty()) {
             return true;
         }
@@ -38,7 +41,7 @@ public class RefreshTokenInterceptor implements HandlerInterceptor {
         UserHolder.saveUser(userHolderCommand);
         //刷新token有效期
         stringRedisTemplate
-                .expire(RedisConstants.LOGIN_USER_KEY+token,RedisConstants.LOGIN_USER_TTL, TimeUnit.MINUTES);
+                .expire(LOGIN_USER_KEY+token,LOGIN_USER_TTL, MINUTES);
         return true;
     }
 

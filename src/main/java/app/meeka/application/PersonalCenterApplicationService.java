@@ -1,13 +1,12 @@
 package app.meeka.application;
 
 
-import app.meeka.application.command.UserHolderCommand;
 import app.meeka.application.result.PersonalCenterResult;
 import app.meeka.application.result.Result;
+import app.meeka.domain.exception.UserNotFoundException;
 import app.meeka.domain.model.User;
 import app.meeka.domain.repository.UserRepository;
 import app.meeka.utils.UserHolder;
-import cn.hutool.core.bean.BeanUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -22,10 +21,19 @@ public class PersonalCenterApplicationService {
     }
 
     //keypoint：返回当前登录用户的详细个人信息
-    public Result getUserHolder(){
-//        UserHolderCommand userHolderCommand = UserHolder.getUser();
-        Optional<User> user = userRepository.findById(UserHolder.getUser().getId());
-        PersonalCenterResult personalCenterResult = BeanUtil.copyProperties(user, PersonalCenterResult.class);
+    public Result getUserHolder() throws UserNotFoundException, ClassNotFoundException {
+        User user = userRepository
+                .findById(UserHolder.getUser().getId())
+                .orElseThrow(() -> new UserNotFoundException(UserHolder.getUser().getId()));
+        PersonalCenterResult personalCenterResult = new PersonalCenterResult(
+                user.getNikeName(),
+                user.getIcon(),
+                user.getFans(),
+                user.getFollowee(),
+                user.getGender(),
+                user.getCity(),
+                user.getIntroduce()
+        );
         return Result.Success(personalCenterResult);
     }
 }
