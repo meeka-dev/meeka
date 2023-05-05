@@ -81,4 +81,7 @@ public class UserLoginApplicationService {
         stringRedisTemplate.opsForHash().delete(LOGIN_USER_KEY + token, "id");
         return Result.Success("已登出");
     }
+
+    //keypoint: 密码登录
+    
 }
