@@ -3,10 +3,7 @@ package app.meeka.presentation.rest;
 import app.meeka.application.PersonalCenterApplicationService;
 import app.meeka.application.result.Result;
 import app.meeka.domain.exception.UserNotFoundException;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -19,24 +16,34 @@ public class PersonalCenterRestController {
         this.personalCenterApplicationService = personalCenterApplicationService;
     }
 
-    @PostMapping("/details")
+    @GetMapping("/details")
     public Result PersonalDetails() throws UserNotFoundException, ClassNotFoundException {
         return personalCenterApplicationService.getUserHolder();
     }
 
-    @PostMapping("/follows")
-    public Result getFollows(){
+    @GetMapping("/follows")
+    public Result getFollows() {
         return personalCenterApplicationService.getFollows();
     }
 
-    @PostMapping("/follow/{id}/{isFollow}")
-    public Result follow(@PathVariable("id") Long id,@PathVariable("isFollow") Boolean isFollow){
-        return personalCenterApplicationService.followOrUnfollow(id,isFollow);
+    @PostMapping("/follow")
+    public Result follow(@RequestParam("id") Long id, @RequestParam("isFollow") Boolean isFollow) {
+        return personalCenterApplicationService.followOrUnfollow(id, isFollow);
     }
 
-    @PostMapping("/isFollow/{id}")
-    public Result isFollow(@PathVariable("id") Long id){
+    @GetMapping("/isFollow")
+    public Result isFollow(@RequestParam("id") Long id) {
         return personalCenterApplicationService.isFollow(id);
+    }
+
+    @GetMapping("/fans")
+    public Result getFans() {
+        return personalCenterApplicationService.getFans();
+    }
+
+    @GetMapping("/commonFollows")
+    public Result getCommonFollows(@RequestParam("id") Long id) {
+        return personalCenterApplicationService.getCommonFollows(id);
     }
 }
 

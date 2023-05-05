@@ -2,7 +2,6 @@ package app.meeka.domain.model;
 
 
 import app.meeka.domain.exception.InvalidUserInfoException;
-
 import cn.hutool.core.util.RandomUtil;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.PersistenceCreator;
@@ -110,5 +109,9 @@ public class User {
 
     public OffsetDateTime getUpdateTime() {
         return updateTime;
+    }
+
+    public void updateFollow() {
+        this.fans++;
     }
 }

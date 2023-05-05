@@ -1,15 +1,15 @@
 package app.meeka.utils;
 
-import app.meeka.application.command.UserHolderCommand;
+import app.meeka.application.command.UserBasicCommand;
 
 public class UserHolder {
-    private static final ThreadLocal<UserHolderCommand> tl = new ThreadLocal<>();
+    private static final ThreadLocal<UserBasicCommand> tl = new ThreadLocal<>();
 
-    public static void saveUser(UserHolderCommand user){
+    public static void saveUser(UserBasicCommand user) {
         tl.set(user);
     }
 
-    public static UserHolderCommand getUser(){
+    public static UserBasicCommand getUser() {
         return tl.get();
     }
 

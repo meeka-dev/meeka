@@ -2,7 +2,7 @@ package app.meeka.application;
 
 
 import app.meeka.application.command.CreateUserCommand;
-import app.meeka.application.command.UserHolderCommand;
+import app.meeka.application.command.UserBasicCommand;
 import app.meeka.application.result.Result;
 import app.meeka.domain.exception.InvalidLoginCodeException;
 import app.meeka.domain.exception.InvalidUserInfoException;
@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static app.meeka.utils.MailUtils.CODE_INFORMATION;
 import static app.meeka.utils.MailUtils.CODE_MESSAGE;
@@ -55,9 +54,9 @@ public class UserLoginApplicationService {
         }
         User user = userRepository.findByEmail(newUser.getEmail());
         String token = UUID.randomUUID().toString(true);
-        UserHolderCommand userHolderCommand = BeanUtil.copyProperties(user, UserHolderCommand.class);
+        UserBasicCommand userBasicCommand = BeanUtil.copyProperties(user, UserBasicCommand.class);
         //hashMap储存user信息
-        Map<String, Object> userMap = BeanUtil.beanToMap(userHolderCommand, new HashMap<>(),
+        Map<String, Object> userMap = BeanUtil.beanToMap(userBasicCommand, new HashMap<>(),
                 CopyOptions.create()
                         .setIgnoreNullValue(true)
                         .setFieldValueEditor((filedName, filedValue) -> filedValue.toString())

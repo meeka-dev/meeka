@@ -1,6 +1,6 @@
 package app.meeka.utils;
 
-import app.meeka.application.command.UserHolderCommand;
+import app.meeka.application.command.UserBasicCommand;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +28,7 @@ public class RefreshTokenInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String token = request.getHeader("authorization");
-        if (StrUtil.isBlank(token)){
+        if (StrUtil.isBlank(token)) {
             return true;
         }
         Map<Object, Object> userMap = stringRedisTemplate
@@ -36,12 +36,12 @@ public class RefreshTokenInterceptor implements HandlerInterceptor {
         if (userMap.isEmpty()) {
             return true;
         }
-        UserHolderCommand userHolderCommand = BeanUtil
-                .fillBeanWithMap(userMap, new UserHolderCommand(), false);
-        UserHolder.saveUser(userHolderCommand);
+        UserBasicCommand userBasicCommand = BeanUtil
+                .fillBeanWithMap(userMap, new UserBasicCommand(), false);
+        UserHolder.saveUser(userBasicCommand);
         //刷新token有效期
         stringRedisTemplate
-                .expire(LOGIN_USER_KEY+token,LOGIN_USER_TTL, MINUTES);
+                .expire(LOGIN_USER_KEY + token, LOGIN_USER_TTL, MINUTES);
         return true;
     }
 

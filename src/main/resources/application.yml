@@ -3,7 +3,8 @@ spring:
     enabled: true
     baseline-on-migrate: true
     clean-on-validation-error: true
-
+  jpa:
+    show-sql: true
   messages:
     basename: messages.exception
   application:
