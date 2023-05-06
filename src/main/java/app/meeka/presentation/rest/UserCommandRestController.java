@@ -4,7 +4,7 @@ package app.meeka.presentation.rest;
 import app.meeka.application.UserLoginApplicationService;
 import app.meeka.application.command.CreateUserCommand;
 import app.meeka.application.result.Result;
-import app.meeka.domain.exception.InvalidLoginCodeException;
+import app.meeka.domain.exception.InvalidCodeException;
 import app.meeka.domain.exception.InvalidUserInfoException;
 import app.meeka.presentation.rest.request.CreateUserRequest;
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +20,13 @@ public class UserCommandRestController {
     }
 
     @PostMapping("/login")
-    public Result userLogin(@RequestBody CreateUserRequest userRequest) throws InvalidLoginCodeException, InvalidUserInfoException {
-        var command=new CreateUserCommand(userRequest.email(),userRequest.code());
+    public Result userLogin(@RequestBody CreateUserRequest userRequest) throws InvalidCodeException, InvalidUserInfoException {
+        CreateUserCommand command = new CreateUserCommand(userRequest.email(), userRequest.code());
         return userLoginApplicationService.userLoginWithCode(command);
     }
 
     @PostMapping("/code")
-    public Result sendCode(@RequestParam("email") String email) throws InvalidLoginCodeException, InvalidUserInfoException {
+    public Result sendCode(@RequestParam("email") String email) throws InvalidCodeException, InvalidUserInfoException {
         return userLoginApplicationService.sendCodeByEmail(email);
     }
 

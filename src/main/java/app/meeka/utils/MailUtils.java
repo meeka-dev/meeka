@@ -11,8 +11,13 @@ import java.util.Properties;
 public final class MailUtils {
     private static final String USER = "barrk999@qq.com"; // 发件人称号，同邮箱地址※
     private static final String PASSWORD = "gkpzflzkbfvvdiba"; // 授权码，开启SMTP时显示※
-    public static final String CODE_INFORMATION="。该验证码用于meeka登录身份确认，五分钟内有效，请勿泄露和转发。如非本人操作，请忽略此邮件。";
-    public static final String CODE_MESSAGE="欢迎登录meeka，验证码是:";
+    public static final String LOGIN_CODE_INFORMATION = "。该验证码用于meeka登录身份确认，五分钟内有效，请勿泄露和转发。如非本人操作，请忽略此邮件。";
+    public static final String LOGIN_CODE_MESSAGE = "欢迎登录meeka，验证码是:";
+    public static final String LOGIN_CODE_TITLE = "您正在登录meeka";
+    public static final String UPDATE_PASSWORD_CODE_INFORMATION = "。该验证码用于meeka登录身份确认，五分钟内有效，请勿泄露和转发。如非本人操作，请忽略此邮件。";
+    public static final String UPDATE_PASSWORD_CODE_MESSAGE = "您正在设置或修改meeka账户密码，验证码是:";
+    public static final String UPDATE_PASSWORD_CODE_TITLE = "您正在设置或修改meeka账户密码";
+
     /**
      * @param to    收件人邮箱
      * @param text  邮件正文
@@ -68,10 +73,6 @@ public final class MailUtils {
             e.printStackTrace();
         }
         return false;
-    }
-
-    public static void main(String[] args) {
-        MailUtils.sendMail("1552585576@qq.com",CODE_MESSAGE+772143+CODE_INFORMATION,CODE_MESSAGE);
     }
 
 }

@@ -21,7 +21,8 @@ public class AccessConfig implements WebMvcConfigurer {
                         "/user/login",
                         "/user/logout",
                         "/post/creat-post",
-                        "/me/**"
+                        "/me/**",
+                        "/setUp/**"
 
                 ).order(1);
         registry.addInterceptor(new RefreshTokenInterceptor(stringRedisTemplate))
