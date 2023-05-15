@@ -15,7 +15,10 @@ import jakarta.annotation.Resource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import static app.meeka.utils.MailUtils.*;
@@ -116,8 +119,10 @@ public class SetUpApplicationService {
     }
 
     //keypoint: 编辑生日
-    // TODO: 2023/5/6 日期格式化 
-    public Result updateBirthday(OffsetDateTime birthday) {
+    public Result updateBirthday(String birthdayStr) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate localDate = LocalDate.parse(birthdayStr, formatter);
+        OffsetDateTime birthday = localDate.atStartOfDay().atOffset(ZoneOffset.ofHours(8));
         UserBasicCommand userBasicCommand = UserHolder.getUser();
         Optional<User> userOptional = userRepository.findById(userBasicCommand.getId());
         if (userOptional.isPresent()) {

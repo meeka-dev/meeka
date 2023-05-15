@@ -62,16 +62,23 @@ public class PersonalCenterApplicationService {
         if (userBasicCommand == null) {
             return Result.defeat("未登录！");
         }
+        if (userBasicCommand.getId().equals(followUserId)) {
+            return Result.defeat("不能关注自己!");
+        }
         Long userId = userBasicCommand.getId();
         if (!isFollow) {
             //关注
             Follow follow = new Follow(userId, followUserId);
             Follow save = followRepository.save(follow);
             Optional<User> userOptional = userRepository.findById(userId);
+            Optional<User> userOptionalBeingFollowed = userRepository.findById(followUserId);
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
+                User userBeingFollowed = userOptionalBeingFollowed.get();
                 user.updateFollow();
+                userBeingFollowed.updateFans();
                 userRepository.save(user);
+                userRepository.save(userBeingFollowed);
             }
             if (follow.equals(save)) {
                 stringRedisTemplate.opsForSet().add(FOLLOW_KEY + userId, followUserId.toString());
@@ -102,7 +109,7 @@ public class PersonalCenterApplicationService {
         List<Long> followIds = followRepository
                 .getFollowsByUserId(userBasicCommand.getId())
                 .stream()
-                .map(Follow::getId)
+                .map(Follow::getFollowId)
                 .toList();
         List<UserBasicCommand> follows = userRepository
                 .findAllById(followIds)
@@ -118,7 +125,7 @@ public class PersonalCenterApplicationService {
         List<Long> fansIds = followRepository
                 .getFollowsByFollowUserId(userBasicCommand.getId())
                 .stream()
-                .map(Follow::getId)
+                .map(Follow::getUserId)
                 .toList();
         List<UserBasicCommand> fans = userRepository
                 .findAllById(fansIds)

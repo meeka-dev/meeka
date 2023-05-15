@@ -8,8 +8,6 @@ import app.meeka.domain.exception.InvalidUserInfoException;
 import app.meeka.presentation.rest.request.CreateUserRequest;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.OffsetDateTime;
-
 @RestController
 @RequestMapping("/setUp")
 public class SetUpRestController {
@@ -32,8 +30,8 @@ public class SetUpRestController {
     }
 
     @PostMapping("/updateBirthday")
-    public Result updateBirthday(@RequestParam("birthday") OffsetDateTime birthday) {
-        return setUpApplicationService.updateBirthday(birthday);
+    public Result updateBirthday(@RequestParam("birthday") String birthdayStr) {
+        return setUpApplicationService.updateBirthday(birthdayStr);
     }
 
     @PostMapping("/updateGender")

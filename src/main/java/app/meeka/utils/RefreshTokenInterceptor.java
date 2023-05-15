@@ -1,7 +1,6 @@
 package app.meeka.utils;
 
 import app.meeka.application.command.UserBasicCommand;
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,12 +35,15 @@ public class RefreshTokenInterceptor implements HandlerInterceptor {
         if (userMap.isEmpty()) {
             return true;
         }
-        UserBasicCommand userBasicCommand = BeanUtil
-                .fillBeanWithMap(userMap, new UserBasicCommand(), false);
+        UserBasicCommand userBasicCommand = new UserBasicCommand(
+                Long.valueOf(userMap.get("id").toString()),
+                userMap.get("nickName").toString(),
+                userMap.get("icon").toString()
+        );
         UserHolder.saveUser(userBasicCommand);
         //刷新token有效期
         stringRedisTemplate
-                .expire(LOGIN_USER_KEY + token, LOGIN_USER_TTL, MINUTES);
+                .expire(LOGIN_USER_KEY + token.split(" ")[1], LOGIN_USER_TTL, MINUTES);
         return true;
     }
 

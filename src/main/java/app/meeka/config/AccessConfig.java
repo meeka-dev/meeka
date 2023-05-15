@@ -18,12 +18,7 @@ public class AccessConfig implements WebMvcConfigurer {
         registry.addInterceptor(new LoginInterceptor())
                 .excludePathPatterns(
                         "/user/code",
-                        "/user/login",
-                        "/user/logout",
-                        "/post/creat-post",
-                        "/me/**",
-                        "/setUp/**"
-
+                        "/user/login"
                 ).order(1);
         registry.addInterceptor(new RefreshTokenInterceptor(stringRedisTemplate))
                 .addPathPatterns(

@@ -95,9 +95,6 @@ public class User {
         return updateTime;
     }
 
-    public void updateFollow() {
-        this.fans++;
-    }
 
     public User(UserInfo userInfo) throws InvalidUserInfoException {
         if (!userInfo.isValid()) {
@@ -115,6 +112,14 @@ public class User {
         this.introduce = null;
         this.createTime = now();
         this.updateTime = this.createTime;
+    }
+
+    public void updateFollow() {
+        this.followee++;
+    }
+
+    public void updateFans() {
+        this.fans++;
     }
 
     public boolean updatePassword(String password) {
