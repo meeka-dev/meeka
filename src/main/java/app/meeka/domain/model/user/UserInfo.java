@@ -1,4 +1,4 @@
-package app.meeka.domain.model;
+package app.meeka.domain.model.user;
 
 import java.util.regex.Pattern;
 
@@ -15,6 +15,6 @@ public record UserInfo (
     }
 
     private boolean isEmailValid() {
-        return nonNull(this.email)&&Pattern.matches(email,EMAIL_REGEX);
+        return nonNull(this.email)&&Pattern.matches(EMAIL_REGEX,email);
     }
 }

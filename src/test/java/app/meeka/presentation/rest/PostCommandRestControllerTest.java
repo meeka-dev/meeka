@@ -30,7 +30,7 @@ class PostCommandRestControllerTest {
     void should_return_ok_when_create_post_via_rest_api() throws Exception {
         var postId = 1L;
         given(postCommandApplicationService.createPost(any())).willReturn(new PostCreatedResult(postId));
-        mockMvc
+       mockMvc
                 .perform(
                         post("/post/create-post")
                                 .contentType(APPLICATION_JSON)

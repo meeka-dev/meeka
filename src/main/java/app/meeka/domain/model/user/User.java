@@ -1,14 +1,17 @@
-package app.meeka.domain.model;
+package app.meeka.domain.model.user;
 
 
 import app.meeka.domain.exception.InvalidUserInfoException;
-
-import cn.hutool.core.util.RandomUtil;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import org.springframework.data.annotation.PersistenceCreator;
 
 import java.time.OffsetDateTime;
 
+import static cn.hutool.core.util.RandomUtil.randomString;
+import static jakarta.persistence.EnumType.ORDINAL;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static java.time.OffsetDateTime.now;
 
@@ -16,20 +19,22 @@ import static java.time.OffsetDateTime.now;
 public class User {
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @SuppressWarnings("unused")
     private Long id;
     private String email;
     private String password;
-    private String nikeName;
+    private String nickName;
     private String icon;
     private int fans;
     private int followee;
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(ORDINAL)
     private Gender gender;
     private OffsetDateTime birthday;
     private String city;
     private String introduce;
-    private OffsetDateTime creatTime;
+    private OffsetDateTime createTime;
     private OffsetDateTime updateTime;
+
 
     @PersistenceCreator
     protected User() {
@@ -37,16 +42,15 @@ public class User {
     }
 
 
-    public enum Gender{
-        MALE,FEMALE,UNKNOWN
+    public enum Gender {
+        MALE, FEMALE, UNKNOWN
     }
+
     public User(UserInfo userInfo) throws InvalidUserInfoException {
-        if (!userInfo.isValid()) {
-            throw new InvalidUserInfoException();
-        }
+        if (!userInfo.isValid()) throw new InvalidUserInfoException();
         this.email = userInfo.email();
         this.password = "";
-        this.nikeName = "用户"+ RandomUtil.randomString(10);
+        this.nickName = "用户" + randomString(10);
         this.icon = null;
         this.fans = 0;
         this.followee = 0;
@@ -54,8 +58,8 @@ public class User {
         this.birthday = null;
         this.city = null;
         this.introduce = null;
-        this.creatTime = now();
-        this.updateTime = creatTime;
+        this.createTime = now();
+        this.updateTime = this.createTime;
     }
 
     public Long getId() {
@@ -71,7 +75,7 @@ public class User {
     }
 
     public String getNikeName() {
-        return nikeName;
+        return nickName;
     }
 
     public String getIcon() {
@@ -103,7 +107,7 @@ public class User {
     }
 
     public OffsetDateTime getCreatTime() {
-        return creatTime;
+        return createTime;
     }
 
     public OffsetDateTime getUpdateTime() {

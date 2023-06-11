@@ -1,4 +1,4 @@
-package app.meeka.utils;
+package app.meeka.core.cache;
 
 public class RedisConstants {
 
