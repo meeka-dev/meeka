@@ -51,6 +51,7 @@ public class PersonalCenterApplicationService {
                 user.getFollowee(),
                 user.getGender(),
                 user.getCity(),
+                user.getBirthday(),
                 user.getIntroduce()
         );
         return Result.Success(personalCenterResult);

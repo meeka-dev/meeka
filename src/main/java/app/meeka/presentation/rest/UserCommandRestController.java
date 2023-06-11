@@ -1,11 +1,13 @@
 package app.meeka.presentation.rest;
 
 
+import app.meeka.application.UserHomePageApplicationService;
 import app.meeka.application.UserLoginApplicationService;
 import app.meeka.application.command.CreateUserCommand;
 import app.meeka.application.result.Result;
 import app.meeka.domain.exception.InvalidCodeException;
 import app.meeka.domain.exception.InvalidUserInfoException;
+import app.meeka.domain.exception.UserNotFoundException;
 import app.meeka.presentation.rest.request.CreateUserRequest;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +17,11 @@ public class UserCommandRestController {
 
     private final UserLoginApplicationService userLoginApplicationService;
 
-    public UserCommandRestController(UserLoginApplicationService userLoginApplicationService) {
+    private final UserHomePageApplicationService userHomePageApplicationService;
+
+    public UserCommandRestController(UserLoginApplicationService userLoginApplicationService, UserHomePageApplicationService userHomePageApplicationService) {
         this.userLoginApplicationService = userLoginApplicationService;
+        this.userHomePageApplicationService = userHomePageApplicationService;
     }
 
     @PostMapping("/login")
@@ -26,12 +31,17 @@ public class UserCommandRestController {
     }
 
     @PostMapping("/code")
-    public Result sendCode(@RequestParam("email") String email) throws InvalidCodeException, InvalidUserInfoException {
+    public Result sendCode(@RequestParam("email") String email) throws InvalidUserInfoException {
         return userLoginApplicationService.sendCodeByEmail(email);
     }
 
     @PostMapping("/logout")
-    public Result userLogout(@RequestParam("token") String token){
+    public Result userLogout(@RequestParam("token") String token) {
         return userLoginApplicationService.logout(token);
+    }
+
+    @GetMapping("/{id}")
+    public Result getUserInformation(@PathVariable("id") Long id) throws UserNotFoundException {
+        return userHomePageApplicationService.getUserInformation(id);
     }
 }
