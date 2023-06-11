@@ -1,6 +1,6 @@
 package app.meeka.domain.repository;
 
-import app.meeka.domain.model.Post;
+import app.meeka.domain.model.post.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

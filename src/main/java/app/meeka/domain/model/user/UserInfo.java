@@ -1,4 +1,4 @@
-package app.meeka.domain.model;
+package app.meeka.domain.model.user;
 
 import java.util.regex.Pattern;
 

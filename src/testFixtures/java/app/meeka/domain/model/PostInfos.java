@@ -1,5 +1,7 @@
 package app.meeka.domain.model;
 
+import app.meeka.domain.model.post.PostInfo;
+
 import static app.meeka.common.Randoms.aRandomId;
 import static app.meeka.common.Texts.aPostContent;
 import static app.meeka.common.Texts.aPostTitle;
