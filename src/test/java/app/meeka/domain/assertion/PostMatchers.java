@@ -1,6 +1,6 @@
-package app.meeka.domain.matcher;
+package app.meeka.domain.assertion;
 
-import app.meeka.domain.model.Post;
+import app.meeka.domain.model.post.Post;
 import org.hamcrest.CustomMatcher;
 
 import java.util.Objects;

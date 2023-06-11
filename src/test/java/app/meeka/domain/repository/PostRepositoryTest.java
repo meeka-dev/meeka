@@ -1,15 +1,15 @@
 package app.meeka.domain.repository;
 
 import app.meeka.domain.exception.InvalidPostInfoException;
-import app.meeka.domain.model.Post;
+import app.meeka.domain.model.post.Post;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import static app.meeka.domain.model.PostInfos.aPostInfo;
-import static app.meeka.domain.matcher.PostMatchers.persisted;
-import static app.meeka.domain.matcher.PostMatchers.sameAs;
+import static app.meeka.domain.assertion.PostMatchers.persisted;
+import static app.meeka.domain.assertion.PostMatchers.sameAs;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;

@@ -17,7 +17,6 @@ import static org.springframework.http.ResponseEntity.internalServerError;
 public class ExceptionControllerAdvice {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionControllerAdvice.class);
-
     public static final String DEFAULT_BUSINESS_EXCEPTION_MESSAGE_TEMPLATE = "No error message found under the error code <%s> for the locale <%s>.";
     public static final String SYSTEM_EXCEPTION_MESSAGE = "A system error occurred.";
 
