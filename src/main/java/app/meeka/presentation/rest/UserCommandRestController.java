@@ -4,11 +4,15 @@ package app.meeka.presentation.rest;
 import app.meeka.application.UserHomePageApplicationService;
 import app.meeka.application.UserLoginApplicationService;
 import app.meeka.application.command.CreateUserCommand;
-import app.meeka.application.result.Result;
+import app.meeka.application.command.LoginPasswordCommand;
+import app.meeka.application.result.PersonalCenterResult;
+import app.meeka.application.result.UserLoginResult;
 import app.meeka.domain.exception.InvalidCodeException;
 import app.meeka.domain.exception.InvalidUserInfoException;
+import app.meeka.domain.exception.PasswordErrException;
 import app.meeka.domain.exception.UserNotFoundException;
 import app.meeka.presentation.rest.request.CreateUserRequest;
+import app.meeka.presentation.rest.request.LoginPasswordRequest;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,23 +29,29 @@ public class UserCommandRestController {
     }
 
     @PostMapping("/login")
-    public Result userLogin(@RequestBody CreateUserRequest userRequest) throws InvalidCodeException, InvalidUserInfoException {
+    public UserLoginResult userLogin(@RequestBody CreateUserRequest userRequest) throws InvalidCodeException, InvalidUserInfoException {
         CreateUserCommand command = new CreateUserCommand(userRequest.email(), userRequest.code());
         return userLoginApplicationService.userLoginWithCode(command);
     }
 
     @PostMapping("/code")
-    public Result sendCode(@RequestParam("email") String email) throws InvalidUserInfoException {
-        return userLoginApplicationService.sendCodeByEmail(email);
+    public void sendCode(@RequestParam("email") String email) throws InvalidUserInfoException {
+        userLoginApplicationService.sendCodeByEmail(email);
     }
 
     @PostMapping("/logout")
-    public Result userLogout(@RequestParam("token") String token) {
-        return userLoginApplicationService.logout(token);
+    public void userLogout(@RequestParam("token") String token) {
+        userLoginApplicationService.logout(token);
     }
 
     @GetMapping("/{id}")
-    public Result getUserInformation(@PathVariable("id") Long id) throws UserNotFoundException {
+    public PersonalCenterResult getUserInformation(@PathVariable("id") Long id) throws UserNotFoundException {
         return userHomePageApplicationService.getUserInformation(id);
+    }
+
+    @PostMapping("/loginWithPs")
+    public UserLoginResult userLoginWithPassword(@RequestBody LoginPasswordRequest loginPasswordRequest) throws PasswordErrException {
+        LoginPasswordCommand loginPasswordCommand = new LoginPasswordCommand(loginPasswordRequest.email(), loginPasswordRequest.password());
+        return userLoginApplicationService.userLoginWithPassword(loginPasswordCommand);
     }
 }
