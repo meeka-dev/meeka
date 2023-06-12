@@ -1,40 +1,47 @@
 package app.meeka.presentation.rest;
 
-import app.meeka.application.UserCommandApplicationService;
+
+import app.meeka.application.UserHomePageApplicationService;
+import app.meeka.application.UserLoginApplicationService;
 import app.meeka.application.command.CreateUserCommand;
-import app.meeka.application.result.UserLoginResult;
-import app.meeka.domain.exception.InvalidLoginCodeException;
+import app.meeka.application.result.Result;
+import app.meeka.domain.exception.InvalidCodeException;
 import app.meeka.domain.exception.InvalidUserInfoException;
+import app.meeka.domain.exception.UserNotFoundException;
 import app.meeka.presentation.rest.request.CreateUserRequest;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
 public class UserCommandRestController {
 
-    private final UserCommandApplicationService userLoginApplicationService;
+    private final UserLoginApplicationService userLoginApplicationService;
 
-    public UserCommandRestController(UserCommandApplicationService userLoginApplicationService) {
+    private final UserHomePageApplicationService userHomePageApplicationService;
+
+    public UserCommandRestController(UserLoginApplicationService userLoginApplicationService, UserHomePageApplicationService userHomePageApplicationService) {
         this.userLoginApplicationService = userLoginApplicationService;
+        this.userHomePageApplicationService = userHomePageApplicationService;
     }
 
     @PostMapping("/login")
-    public UserLoginResult userLogin(@RequestBody CreateUserRequest request) throws InvalidLoginCodeException, InvalidUserInfoException {
-        var command = new CreateUserCommand(request.email(), request.code());
+    public Result userLogin(@RequestBody CreateUserRequest userRequest) throws InvalidCodeException, InvalidUserInfoException {
+        CreateUserCommand command = new CreateUserCommand(userRequest.email(), userRequest.code());
         return userLoginApplicationService.userLoginWithCode(command);
     }
 
     @PostMapping("/code")
-    public void sendCode(@RequestParam("email") String email) {
-        userLoginApplicationService.sendCodeByEmail(email);
+    public Result sendCode(@RequestParam("email") String email) throws InvalidUserInfoException {
+        return userLoginApplicationService.sendCodeByEmail(email);
     }
 
     @PostMapping("/logout")
-    public void userLogout(@RequestParam("token") String token) {
-        userLoginApplicationService.logout(token);
+    public Result userLogout(@RequestParam("token") String token) {
+        return userLoginApplicationService.logout(token);
+    }
+
+    @GetMapping("/{id}")
+    public Result getUserInformation(@PathVariable("id") Long id) throws UserNotFoundException {
+        return userHomePageApplicationService.getUserInformation(id);
     }
 }

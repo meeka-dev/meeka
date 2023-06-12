@@ -1,5 +1,6 @@
 package app.meeka.application;
 
+
 import app.meeka.application.command.CreateUserCommand;
 import app.meeka.application.command.UserBasicCommand;
 import app.meeka.application.result.UserLoginResult;
@@ -8,7 +9,11 @@ import app.meeka.domain.exception.InvalidUserInfoException;
 import app.meeka.domain.model.User;
 import app.meeka.domain.model.user.UserInfo;
 import app.meeka.domain.repository.UserRepository;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.RandomUtil;
+import jakarta.annotation.Resource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,35 +27,40 @@ import static app.meeka.core.cache.RedisConstants.LOGIN_USER_KEY;
 import static app.meeka.core.cache.RedisConstants.LOGIN_USER_TTL;
 import static app.meeka.core.mail.MailSender.LOGIN_CODE_INFORMATION;
 import static app.meeka.core.mail.MailSender.LOGIN_CODE_MESSAGE;
+import static app.meeka.core.mail.MailSender.LOGIN_CODE_TITLE;
 import static app.meeka.core.mail.MailSender.sendMail;
-import static cn.hutool.core.bean.BeanUtil.beanToMap;
-import static cn.hutool.core.bean.BeanUtil.copyProperties;
-import static cn.hutool.core.lang.UUID.randomUUID;
-import static cn.hutool.core.util.RandomUtil.randomNumbers;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 @Service
 @Transactional
-public class UserCommandApplicationService {
+public class UserLoginApplicationService {
 
     private final UserRepository userRepository;
-    private final StringRedisTemplate stringRedisTemplate;
 
-    public UserCommandApplicationService(UserRepository userRepository, StringRedisTemplate stringRedisTemplate) {
+    public UserLoginApplicationService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.stringRedisTemplate = stringRedisTemplate;
     }
 
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
+
+    // keypoint: 邮箱验证码注册&登录
     public UserLoginResult userLoginWithCode(CreateUserCommand userCommand) throws InvalidUserInfoException, InvalidCodeException {
         User newUser = new User(new UserInfo(userCommand.email()));
         String cacheCode = stringRedisTemplate.opsForValue().get(LOGIN_CODE_KEY + userCommand.email());
         String code = userCommand.code();
-        if (cacheCode == null || !cacheCode.equals(code)) throw new app.meeka.domain.exception.InvalidCodeException();
-        if (!userRepository.existsByEmail(newUser.getEmail())) userRepository.save(newUser);
+        if (cacheCode == null || !cacheCode.equals(code)) {
+            throw new InvalidCodeException();
+        }
+        if (!userRepository.existsByEmail(newUser.getEmail())) {
+            userRepository.save(newUser);
+        }
         User user = userRepository.findByEmail(newUser.getEmail());
-        String token = randomUUID().toString(true);
-        UserBasicCommand userHolderCommand = copyProperties(user, UserBasicCommand.class);
-        Map<String, Object> userMap = beanToMap(userHolderCommand, new HashMap<>(),
+        String token = UUID.randomUUID().toString(true);
+        UserBasicCommand userBasicCommand = new UserBasicCommand(user.getId(), user.getNikeName(), user.getIcon());
+        // hashMap储存user信息
+        Map<String, Object> userMap = BeanUtil.beanToMap(userBasicCommand, new HashMap<>(),
                 CopyOptions.create()
                         .setIgnoreNullValue(true)
                         .setFieldValueEditor((filedName, filedValue) -> filedValue.toString())
@@ -60,13 +70,17 @@ public class UserCommandApplicationService {
         return new UserLoginResult(token);
     }
 
-    public void sendCodeByEmail(String email) {
-        String code = randomNumbers(6);
+    // keypoint: 邮箱发送登录验证码
+    public void sendCodeByEmail(String email) throws InvalidUserInfoException {
+        User user = new User(new UserInfo(email));
+        String code = RandomUtil.randomNumbers(6);
         stringRedisTemplate.opsForValue().set(LOGIN_CODE_KEY + email, code, LOGIN_CODE_TTL, MINUTES);
-        sendMail(email, LOGIN_CODE_MESSAGE + code + LOGIN_CODE_INFORMATION, LOGIN_CODE_MESSAGE);
+        sendMail(email, LOGIN_CODE_MESSAGE + code + LOGIN_CODE_INFORMATION, LOGIN_CODE_TITLE);
     }
 
     public void logout(String token) {
+        System.out.println(token);
         stringRedisTemplate.opsForHash().delete(LOGIN_USER_KEY + token, "id");
     }
+
 }
