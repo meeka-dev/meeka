@@ -6,7 +6,7 @@ import app.meeka.application.command.UserBasicCommand;
 import app.meeka.application.result.UserLoginResult;
 import app.meeka.domain.exception.InvalidCodeException;
 import app.meeka.domain.exception.InvalidUserInfoException;
-import app.meeka.domain.model.User;
+import app.meeka.domain.model.user.User;
 import app.meeka.domain.model.user.UserInfo;
 import app.meeka.domain.repository.UserRepository;
 import cn.hutool.core.bean.BeanUtil;

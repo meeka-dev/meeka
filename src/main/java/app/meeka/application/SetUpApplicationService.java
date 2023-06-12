@@ -5,12 +5,8 @@ import app.meeka.application.command.CreateUserCommand;
 import app.meeka.application.command.UserBasicCommand;
 import app.meeka.core.context.UserHolder;
 import app.meeka.core.mail.MailSender;
-import app.meeka.domain.exception.InvalidCodeException;
-import app.meeka.domain.exception.InvalidPasswordFormatException;
-import app.meeka.domain.exception.InvalidUserInfoException;
-import app.meeka.domain.exception.InvalidUsernameFormatException;
-import app.meeka.domain.exception.MismatchedEmailBindingException;
-import app.meeka.domain.model.User;
+import app.meeka.domain.exception.*;
+import app.meeka.domain.model.user.User;
 import app.meeka.domain.repository.UserRepository;
 import cn.hutool.core.util.RandomUtil;
 import jakarta.annotation.Resource;
@@ -25,9 +21,7 @@ import java.util.Optional;
 
 import static app.meeka.core.cache.RedisConstants.UPDATE_PASSWORD_CODE_KEY;
 import static app.meeka.core.cache.RedisConstants.UPDATE_PASSWORD_CODE_TTL;
-import static app.meeka.core.mail.MailSender.UPDATE_PASSWORD_CODE_INFORMATION;
-import static app.meeka.core.mail.MailSender.UPDATE_PASSWORD_CODE_MESSAGE;
-import static app.meeka.core.mail.MailSender.UPDATE_PASSWORD_CODE_TITLE;
+import static app.meeka.core.mail.MailSender.*;
 import static java.util.Objects.isNull;
 import static java.util.concurrent.TimeUnit.MINUTES;
 

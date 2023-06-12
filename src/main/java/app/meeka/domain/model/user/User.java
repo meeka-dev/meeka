@@ -1,8 +1,7 @@
-package app.meeka.domain.model;
+package app.meeka.domain.model.user;
 
 
 import app.meeka.domain.exception.InvalidUserInfoException;
-import app.meeka.domain.model.user.UserInfo;
 import cn.hutool.core.util.RandomUtil;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.PersistenceCreator;
@@ -34,15 +33,14 @@ public class User {
     private OffsetDateTime createTime;
     private OffsetDateTime updateTime;
 
+    public static final String PASSWORD_REGEX = "^(?![a-zA-Z]+$)(?!\\d+$)(?![^\\da-zA-Z\s]+$).{6,12}$";
+    public static final String NICKNAME_REGEX = "^[\\u4e00-\\u9fa5a-zA-Z0-9]{6,12}$";
 
     @PersistenceCreator
-    protected User(UserInfo userInfo) {
+    protected User() {
 
     }
 
-
-    public static final String PASSWORD_REGEX = "^(?![a-zA-Z]+$)(?!\\d+$)(?![^\\da-zA-Z\s]+$).{6,12}$";
-    public static final String NICKNAME_REGEX = "^[\\u4e00-\\u9fa5a-zA-Z0-9]{6,12}$";
 
     public Long getId() {
         return id;
