@@ -57,6 +57,7 @@ public class PersonalCenterApplicationService {
         );
     }
 
+    //keypoint: 关注/取关
     public void toggleFollowState(Long followingUserId) throws InvalidFollowOperationException {
         var currentUser = UserHolder.getUser();
         if (Objects.equals(followingUserId, currentUser.getId())) throw new InvalidFollowOperationException();

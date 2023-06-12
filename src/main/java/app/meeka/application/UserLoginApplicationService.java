@@ -21,14 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 
-import static app.meeka.core.cache.RedisConstants.LOGIN_CODE_KEY;
-import static app.meeka.core.cache.RedisConstants.LOGIN_CODE_TTL;
-import static app.meeka.core.cache.RedisConstants.LOGIN_USER_KEY;
-import static app.meeka.core.cache.RedisConstants.LOGIN_USER_TTL;
-import static app.meeka.core.mail.MailSender.LOGIN_CODE_INFORMATION;
-import static app.meeka.core.mail.MailSender.LOGIN_CODE_MESSAGE;
-import static app.meeka.core.mail.MailSender.LOGIN_CODE_TITLE;
-import static app.meeka.core.mail.MailSender.sendMail;
+import static app.meeka.core.cache.RedisConstants.*;
+import static app.meeka.core.mail.MailSender.*;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 @Service
@@ -79,7 +73,6 @@ public class UserLoginApplicationService {
     }
 
     public void logout(String token) {
-        System.out.println(token);
         stringRedisTemplate.opsForHash().delete(LOGIN_USER_KEY + token, "id");
     }
 
