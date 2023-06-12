@@ -1,18 +1,10 @@
 package app.meeka.application.command;
 
 
-import lombok.Data;
-
-@Data
 public class UserBasicCommand {
     private Long id;
-    private String nickName;
-    private String icon;
-
-
-    public UserBasicCommand() {
-    }
-
+    private final String nickName;
+    private final String icon;
 
     public UserBasicCommand(Long id, String nickName, String icon) {
         this.id = id;

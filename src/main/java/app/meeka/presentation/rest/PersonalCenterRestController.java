@@ -1,9 +1,18 @@
 package app.meeka.presentation.rest;
 
 import app.meeka.application.PersonalCenterApplicationService;
-import app.meeka.application.result.Result;
+import app.meeka.application.command.UserBasicCommand;
+import app.meeka.application.result.PersonalCenterResult;
+import app.meeka.application.result.UserListResult;
+import app.meeka.domain.exception.InvalidFollowOperationException;
 import app.meeka.domain.exception.UserNotFoundException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 
 @RestController
@@ -17,32 +26,27 @@ public class PersonalCenterRestController {
     }
 
     @GetMapping("/details")
-    public Result PersonalDetails() throws UserNotFoundException, ClassNotFoundException {
+    public PersonalCenterResult PersonalDetails() throws UserNotFoundException {
         return personalCenterApplicationService.getUserHolder();
     }
 
     @GetMapping("/follows")
-    public Result getFollows() {
+    public UserListResult getFollows() {
         return personalCenterApplicationService.getFollows();
     }
 
     @PostMapping("/follow")
-    public Result follow(@RequestParam("id") Long id, @RequestParam("isFollow") Boolean isFollow) {
-        return personalCenterApplicationService.followOrUnfollow(id, isFollow);
-    }
-
-    @GetMapping("/isFollow")
-    public Result isFollow(@RequestParam("id") Long id) {
-        return personalCenterApplicationService.isFollow(id);
+    public void toggleFollowState(@RequestParam("id") Long id) throws InvalidFollowOperationException {
+        personalCenterApplicationService.toggleFollowState(id);
     }
 
     @GetMapping("/fans")
-    public Result getFans() {
+    public List<UserBasicCommand> getFans() {
         return personalCenterApplicationService.getFans();
     }
 
     @GetMapping("/commonFollows")
-    public Result getCommonFollows(@RequestParam("id") Long id) {
+    public List<UserBasicCommand> getCommonFollows(@RequestParam("id") Long id) {
         return personalCenterApplicationService.getCommonFollows(id);
     }
 }

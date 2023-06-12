@@ -1,6 +1,6 @@
 package app.meeka.domain.repository;
 
-import app.meeka.domain.model.Follow;
+import app.meeka.domain.model.user.Follow;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

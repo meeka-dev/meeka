@@ -1,4 +1,4 @@
-package app.meeka.utils;
+package app.meeka.core.mail;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -8,7 +8,7 @@ import java.util.Properties;
 /**
  * 发邮件工具类
  */
-public final class MailUtils {
+public final class MailSender {
     private static final String USER = "barrk999@qq.com"; // 发件人称号，同邮箱地址※
     private static final String PASSWORD = "gkpzflzkbfvvdiba"; // 授权码，开启SMTP时显示※
     public static final String LOGIN_CODE_INFORMATION = "。该验证码用于meeka登录身份确认，五分钟内有效，请勿泄露和转发。如非本人操作，请忽略此邮件。";
@@ -74,7 +74,4 @@ public final class MailUtils {
         }
         return false;
     }
-
 }
-
-

@@ -2,6 +2,7 @@ package app.meeka.domain.model;
 
 
 import app.meeka.domain.exception.InvalidUserInfoException;
+import app.meeka.domain.model.user.UserInfo;
 import cn.hutool.core.util.RandomUtil;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.PersistenceCreator;
@@ -35,7 +36,7 @@ public class User {
 
 
     @PersistenceCreator
-    protected User() {
+    protected User(UserInfo userInfo) {
 
     }
 

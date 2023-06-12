@@ -1,28 +1,29 @@
 package app.meeka.application;
 
-
 import app.meeka.application.command.UserBasicCommand;
 import app.meeka.application.result.PersonalCenterResult;
-import app.meeka.application.result.Result;
+import app.meeka.application.result.UserFollowedResult;
+import app.meeka.application.result.UserListResult;
+import app.meeka.core.context.UserHolder;
+import app.meeka.domain.exception.InvalidFollowOperationException;
 import app.meeka.domain.exception.UserNotFoundException;
-import app.meeka.domain.model.Follow;
 import app.meeka.domain.model.User;
+import app.meeka.domain.model.user.Follow;
 import app.meeka.domain.repository.FollowRepository;
 import app.meeka.domain.repository.UserRepository;
-import app.meeka.utils.UserHolder;
 import jakarta.annotation.Resource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static app.meeka.utils.RedisConstants.FOLLOW_KEY;
-import static app.meeka.utils.RedisConstants.LOGIN_USER_KEY;
-
+import static app.meeka.core.cache.RedisConstants.FOLLOW_KEY;
+import static app.meeka.core.cache.RedisConstants.LOGIN_USER_KEY;
+import static java.util.Collections.emptyList;
 
 @Service
 public class PersonalCenterApplicationService {
@@ -39,12 +40,12 @@ public class PersonalCenterApplicationService {
         this.followRepository = followRepository;
     }
 
-    //keypoint：返回当前登录用户的详细个人信息
-    public Result getUserHolder() throws UserNotFoundException {
+    // keypoint：返回当前登录用户的详细个人信息
+    public PersonalCenterResult getUserHolder() throws UserNotFoundException {
         User user = userRepository
                 .findById(UserHolder.getUser().getId())
                 .orElseThrow(() -> new UserNotFoundException(UserHolder.getUser().getId()));
-        PersonalCenterResult personalCenterResult = new PersonalCenterResult(
+        return new PersonalCenterResult(
                 user.getNikeName(),
                 user.getIcon(),
                 user.getFans(),
@@ -54,58 +55,43 @@ public class PersonalCenterApplicationService {
                 user.getBirthday(),
                 user.getIntroduce()
         );
-        return Result.Success(personalCenterResult);
     }
 
-    //keypoint: 关注和取关用户
-    public Result followOrUnfollow(Long followUserId, Boolean isFollow) {
-        UserBasicCommand userBasicCommand = UserHolder.getUser();
-        if (userBasicCommand == null) {
-            return Result.defeat("未登录！");
-        }
-        if (userBasicCommand.getId().equals(followUserId)) {
-            return Result.defeat("不能关注自己!");
-        }
-        Long userId = userBasicCommand.getId();
-        if (!isFollow) {
-            //关注
-            Follow follow = new Follow(userId, followUserId);
+    public void toggleFollowState(Long followingUserId) throws InvalidFollowOperationException {
+        var currentUser = UserHolder.getUser();
+        if (Objects.equals(followingUserId, currentUser.getId())) throw new InvalidFollowOperationException();
+        var followState = isFollow(currentUser.getId(), followingUserId).followed();
+        if (!followState) {
+            Follow follow = new Follow(currentUser.getId(), followingUserId);
             Follow save = followRepository.save(follow);
-            Optional<User> userOptional = userRepository.findById(userId);
-            Optional<User> userOptionalBeingFollowed = userRepository.findById(followUserId);
+            Optional<User> userOptional = userRepository.findById(currentUser.getId());
+            Optional<User> userOptionalBeingFollowed = userRepository.findById(followingUserId);
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
-                User userBeingFollowed = userOptionalBeingFollowed.get();
+                User userBeingFollowed = userOptionalBeingFollowed.orElseThrow();
                 user.updateFollow();
                 userBeingFollowed.updateFans();
                 userRepository.save(user);
                 userRepository.save(userBeingFollowed);
             }
             if (follow.equals(save)) {
-                stringRedisTemplate.opsForSet().add(FOLLOW_KEY + userId, followUserId.toString());
+                stringRedisTemplate.opsForSet().add(FOLLOW_KEY + currentUser.getId(), followingUserId.toString());
             }
-        }else {
-            //取关
-            boolean isSuccess = followRepository.deleteByFollowUserIdAndUserId(followUserId, userId);
-            if (isSuccess){
-                stringRedisTemplate.opsForSet().remove(FOLLOW_KEY+userId,followUserId.toString());
-            }
+        } else {
+            boolean isSuccess = followRepository.deleteByFollowUserIdAndUserId(followingUserId, currentUser.getId());
+            if (isSuccess)
+                stringRedisTemplate.opsForSet().remove(FOLLOW_KEY + currentUser.getId(), followingUserId.toString());
         }
-        return Result.Success();
     }
 
-    //keypoint: 是否已关注
-    public Result isFollow(Long followUserId) {
-        UserBasicCommand userBasicCommand = UserHolder.getUser();
-        if (userBasicCommand == null) {
-            return Result.defeat("未登录！");
-        }
-        boolean isFollow = followRepository.existsByFollowUserIdAndUserId(followUserId, userBasicCommand.getId());
-        return Result.Success(isFollow);
+    // keypoint: 是否已关注
+    public UserFollowedResult isFollow(Long userId, Long followingUserId) {
+        boolean followed = followRepository.existsByFollowUserIdAndUserId(userId, followingUserId);
+        return new UserFollowedResult(followingUserId, followed);
     }
 
-    //keypoint: 获取关注列表
-    public Result getFollows() {
+    // keypoint: 获取关注列表
+    public UserListResult getFollows() {
         UserBasicCommand userBasicCommand = UserHolder.getUser();
         List<Long> followIds = followRepository
                 .getFollowsByUserId(userBasicCommand.getId())
@@ -117,46 +103,38 @@ public class PersonalCenterApplicationService {
                 .stream()
                 .map(user -> new UserBasicCommand(user.getId(), user.getNikeName(), user.getIcon()))
                 .collect(Collectors.toList());
-        return Result.Success(follows);
+        return new UserListResult(follows);
+
     }
 
-    //keypoint: 获取粉丝列表
-    public Result getFans() {
+    // keypoint: 获取粉丝列表
+    public List<UserBasicCommand> getFans() {
         UserBasicCommand userBasicCommand = UserHolder.getUser();
         List<Long> fansIds = followRepository
                 .getFollowsByFollowUserId(userBasicCommand.getId())
                 .stream()
                 .map(Follow::getUserId)
                 .toList();
-        List<UserBasicCommand> fans = userRepository
+        return userRepository
                 .findAllById(fansIds)
                 .stream()
                 .map(user -> new UserBasicCommand(user.getId(), user.getNikeName(), user.getIcon()))
                 .collect(Collectors.toList());
-        return Result.Success(fans);
     }
 
-    //keyPoint: 获取共同关注
-    public Result getCommonFollows(Long userId) {
+    // keyPoint: 获取共同关注
+    public List<UserBasicCommand> getCommonFollows(Long userId) {
         UserBasicCommand userBasicCommand = UserHolder.getUser();
-        //求交集
+        // 求交集
         Set<String> intersect = stringRedisTemplate.opsForSet()
                 .intersect(LOGIN_USER_KEY + userBasicCommand.getId(), LOGIN_USER_KEY + userId);
-        if (intersect == null || intersect.isEmpty()) {
-            return Result.Success(Collections.emptyList());
-        }
+        if (intersect == null || intersect.isEmpty()) return emptyList();
         List<Long> commonFollowIds = intersect.stream().map(Long::valueOf).toList();
-        List<User> commonFollows = userRepository.findAllById(commonFollowIds);
-        return Result.Success(commonFollows);
+        return userRepository
+                .findAllById(commonFollowIds)
+                .stream()
+                .map(user -> new UserBasicCommand(user.getId(), user.getNikeName(), user.getIcon()))
+                .toList();
     }
 }
-
-
-
-
-
-
-
-
-
 

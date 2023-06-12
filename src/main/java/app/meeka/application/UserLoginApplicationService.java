@@ -3,13 +3,12 @@ package app.meeka.application;
 
 import app.meeka.application.command.CreateUserCommand;
 import app.meeka.application.command.UserBasicCommand;
-import app.meeka.application.result.Result;
+import app.meeka.application.result.UserLoginResult;
 import app.meeka.domain.exception.InvalidCodeException;
 import app.meeka.domain.exception.InvalidUserInfoException;
 import app.meeka.domain.model.User;
-import app.meeka.domain.model.UserInfo;
+import app.meeka.domain.model.user.UserInfo;
 import app.meeka.domain.repository.UserRepository;
-import app.meeka.utils.MailUtils;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.lang.UUID;
@@ -22,8 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 
-import static app.meeka.utils.MailUtils.*;
-import static app.meeka.utils.RedisConstants.*;
+import static app.meeka.core.cache.RedisConstants.LOGIN_CODE_KEY;
+import static app.meeka.core.cache.RedisConstants.LOGIN_CODE_TTL;
+import static app.meeka.core.cache.RedisConstants.LOGIN_USER_KEY;
+import static app.meeka.core.cache.RedisConstants.LOGIN_USER_TTL;
+import static app.meeka.core.mail.MailSender.LOGIN_CODE_INFORMATION;
+import static app.meeka.core.mail.MailSender.LOGIN_CODE_MESSAGE;
+import static app.meeka.core.mail.MailSender.LOGIN_CODE_TITLE;
+import static app.meeka.core.mail.MailSender.sendMail;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 @Service
@@ -41,7 +46,7 @@ public class UserLoginApplicationService {
 
 
     // keypoint: 邮箱验证码注册&登录
-    public Result userLoginWithCode(CreateUserCommand userCommand) throws InvalidUserInfoException, InvalidCodeException {
+    public UserLoginResult userLoginWithCode(CreateUserCommand userCommand) throws InvalidUserInfoException, InvalidCodeException {
         User newUser = new User(new UserInfo(userCommand.email()));
         String cacheCode = stringRedisTemplate.opsForValue().get(LOGIN_CODE_KEY + userCommand.email());
         String code = userCommand.code();
@@ -54,7 +59,7 @@ public class UserLoginApplicationService {
         User user = userRepository.findByEmail(newUser.getEmail());
         String token = UUID.randomUUID().toString(true);
         UserBasicCommand userBasicCommand = new UserBasicCommand(user.getId(), user.getNikeName(), user.getIcon());
-        //hashMap储存user信息
+        // hashMap储存user信息
         Map<String, Object> userMap = BeanUtil.beanToMap(userBasicCommand, new HashMap<>(),
                 CopyOptions.create()
                         .setIgnoreNullValue(true)
@@ -62,26 +67,20 @@ public class UserLoginApplicationService {
         );
         stringRedisTemplate.opsForHash().putAll(LOGIN_USER_KEY + token, userMap);
         stringRedisTemplate.expire(LOGIN_USER_KEY + token, LOGIN_USER_TTL, MINUTES);
-        return Result.Success(token);
+        return new UserLoginResult(token);
     }
 
-    //keypoint: 邮箱发送登录验证码
-    public Result sendCodeByEmail(String email) throws InvalidUserInfoException {
+    // keypoint: 邮箱发送登录验证码
+    public void sendCodeByEmail(String email) throws InvalidUserInfoException {
         User user = new User(new UserInfo(email));
         String code = RandomUtil.randomNumbers(6);
         stringRedisTemplate.opsForValue().set(LOGIN_CODE_KEY + email, code, LOGIN_CODE_TTL, MINUTES);
-        MailUtils.sendMail(email, LOGIN_CODE_MESSAGE + code + LOGIN_CODE_INFORMATION, LOGIN_CODE_TITLE);
-        return Result.Success("发送成功");
+        sendMail(email, LOGIN_CODE_MESSAGE + code + LOGIN_CODE_INFORMATION, LOGIN_CODE_TITLE);
     }
 
-    //keypoint: 登出
-    public Result logout(String token) {
+    public void logout(String token) {
         System.out.println(token);
         stringRedisTemplate.opsForHash().delete(LOGIN_USER_KEY + token, "id");
-        return Result.Success("已登出");
     }
-
-
-    //keypoint: 密码登录
 
 }
