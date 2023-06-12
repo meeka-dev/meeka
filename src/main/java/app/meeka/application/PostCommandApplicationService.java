@@ -19,9 +19,16 @@ public class PostCommandApplicationService {
         this.postRepository = postRepository;
     }
 
+    //keypoint: 新建post
     public PostCreatedResult createPost(CreatePostCommand command) throws InvalidPostInfoException {
         var post = new Post(new PostInfo(command.authorId(), command.cover(), command.title(), command.content()));
         var savedPost = postRepository.save(post);
         return new PostCreatedResult(savedPost.getId());
     }
+
+    //keypoint: 编辑post
+
+    //keypoint: 删除post
+
+
 }

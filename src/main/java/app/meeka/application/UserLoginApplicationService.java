@@ -2,13 +2,11 @@ package app.meeka.application;
 
 
 import app.meeka.application.command.CreateUserCommand;
-import app.meeka.application.command.LoginPasswordCommand;
 import app.meeka.application.command.UserBasicCommand;
 import app.meeka.application.result.UserLoginResult;
 import app.meeka.domain.exception.InvalidCodeException;
 import app.meeka.domain.exception.InvalidUserInfoException;
-import app.meeka.domain.exception.PasswordErrException;
-import app.meeka.domain.model.User;
+import app.meeka.domain.model.user.User;
 import app.meeka.domain.model.user.UserInfo;
 import app.meeka.domain.repository.UserRepository;
 import cn.hutool.core.bean.BeanUtil;
@@ -53,29 +51,6 @@ public class UserLoginApplicationService {
             userRepository.save(newUser);
         }
         User user = userRepository.findByEmail(newUser.getEmail());
-        return getUserLoginResult(user);
-    }
-
-    // keypoint: 邮箱发送登录验证码
-    public void sendCodeByEmail(String email) throws InvalidUserInfoException {
-        User user = new User(new UserInfo(email));
-        String code = RandomUtil.randomNumbers(6);
-        stringRedisTemplate.opsForValue().set(LOGIN_CODE_KEY + email, code, LOGIN_CODE_TTL, MINUTES);
-        sendMail(email, LOGIN_CODE_MESSAGE + code + LOGIN_CODE_INFORMATION, LOGIN_CODE_TITLE);
-    }
-
-    //keypoint: 邮箱密码登录
-    public UserLoginResult userLoginWithPassword(LoginPasswordCommand loginPasswordCommand) throws PasswordErrException {
-        User user = userRepository.findByEmail(loginPasswordCommand.email());
-
-        if (user.getPassword() == null || !user.getPassword().equals(loginPasswordCommand.password())) {
-            throw new PasswordErrException();
-        }
-        return getUserLoginResult(user);
-    }
-
-    //keypoint: 登录
-    private UserLoginResult getUserLoginResult(User user) {
         String token = UUID.randomUUID().toString(true);
         UserBasicCommand userBasicCommand = new UserBasicCommand(user.getId(), user.getNikeName(), user.getIcon());
         // hashMap储存user信息
@@ -89,8 +64,15 @@ public class UserLoginApplicationService {
         return new UserLoginResult(token);
     }
 
+    // keypoint: 邮箱发送登录验证码
+    public void sendCodeByEmail(String email) throws InvalidUserInfoException {
+        User user = new User(new UserInfo(email));
+        String code = RandomUtil.randomNumbers(6);
+        stringRedisTemplate.opsForValue().set(LOGIN_CODE_KEY + email, code, LOGIN_CODE_TTL, MINUTES);
+        sendMail(email, LOGIN_CODE_MESSAGE + code + LOGIN_CODE_INFORMATION, LOGIN_CODE_TITLE);
+    }
+
     public void logout(String token) {
-        System.out.println(token);
         stringRedisTemplate.opsForHash().delete(LOGIN_USER_KEY + token, "id");
     }
 

@@ -4,15 +4,12 @@ package app.meeka.presentation.rest;
 import app.meeka.application.UserHomePageApplicationService;
 import app.meeka.application.UserLoginApplicationService;
 import app.meeka.application.command.CreateUserCommand;
-import app.meeka.application.command.LoginPasswordCommand;
 import app.meeka.application.result.PersonalCenterResult;
 import app.meeka.application.result.UserLoginResult;
 import app.meeka.domain.exception.InvalidCodeException;
 import app.meeka.domain.exception.InvalidUserInfoException;
-import app.meeka.domain.exception.PasswordErrException;
 import app.meeka.domain.exception.UserNotFoundException;
 import app.meeka.presentation.rest.request.CreateUserRequest;
-import app.meeka.presentation.rest.request.LoginPasswordRequest;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -47,11 +44,5 @@ public class UserCommandRestController {
     @GetMapping("/{id}")
     public PersonalCenterResult getUserInformation(@PathVariable("id") Long id) throws UserNotFoundException {
         return userHomePageApplicationService.getUserInformation(id);
-    }
-
-    @PostMapping("/loginWithPs")
-    public UserLoginResult userLoginWithPassword(@RequestBody LoginPasswordRequest loginPasswordRequest) throws PasswordErrException {
-        LoginPasswordCommand loginPasswordCommand = new LoginPasswordCommand(loginPasswordRequest.email(), loginPasswordRequest.password());
-        return userLoginApplicationService.userLoginWithPassword(loginPasswordCommand);
     }
 }
