@@ -15,6 +15,7 @@ public class DomainErrorCodes {
     public static final String INVALID_FOLLOW_OPERATION_EXCEPTION = "BIZ_10006";
     public static final String INVALID_USERNAME_FORMAT_EXCEPTION = "BIZ_10007";
     public static final String MISMATCHED_EMAIL_BINDING_EXCEPTION = "BIZ_10008";
+    public static final String PASSWORD_ERR_EXCEPTION = "BIZ_10009";
 
     public static final String LENGTH_OUT_RANGE_EXCEPTION = "BIZ_2001";
 }
