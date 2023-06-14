@@ -1,4 +1,4 @@
-CREATE TABLE `tb_blog_comments`
+CREATE TABLE `comments`
 (
     `id`          bigint(20) UNSIGNED                                           NOT NULL AUTO_INCREMENT,
     `user_id`     bigint(20) UNSIGNED                                           NOT NULL,

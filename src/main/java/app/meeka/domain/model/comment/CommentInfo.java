@@ -5,6 +5,8 @@ import static java.util.Objects.nonNull;
 public record CommentInfo(
         Long userId,
         Long postId,
+        Long parentId,
+        Long answerId,
         String content
 ) {
     public boolean isValid() {
