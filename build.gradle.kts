@@ -20,6 +20,7 @@ dependencies {
     implementation("org.flywaydb:flyway-mysql")
     implementation("cn.hutool:hutool-all:5.8.16")
     implementation("com.sun.mail:javax.mail:1.6.2")
+    implementation("org.projectlombok:lombok:1.18.20")
 
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")

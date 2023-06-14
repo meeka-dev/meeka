@@ -8,7 +8,7 @@ import app.meeka.application.result.UserLoginResult;
 import app.meeka.domain.exception.InvalidCodeException;
 import app.meeka.domain.exception.InvalidUserInfoException;
 import app.meeka.domain.exception.PasswordErrException;
-import app.meeka.domain.model.User;
+import app.meeka.domain.model.user.User;
 import app.meeka.domain.model.user.UserInfo;
 import app.meeka.domain.repository.UserRepository;
 import cn.hutool.core.bean.BeanUtil;
@@ -56,6 +56,7 @@ public class UserLoginApplicationService {
         return getUserLoginResult(user);
     }
 
+
     // keypoint: 邮箱发送登录验证码
     public void sendCodeByEmail(String email) throws InvalidUserInfoException {
         User user = new User(new UserInfo(email));
@@ -64,17 +65,24 @@ public class UserLoginApplicationService {
         sendMail(email, LOGIN_CODE_MESSAGE + code + LOGIN_CODE_INFORMATION, LOGIN_CODE_TITLE);
     }
 
-    //keypoint: 邮箱密码登录
+    //keypoint: 账号密码登录
     public UserLoginResult userLoginWithPassword(LoginPasswordCommand loginPasswordCommand) throws PasswordErrException {
+        String password = loginPasswordCommand.password();
         User user = userRepository.findByEmail(loginPasswordCommand.email());
-
-        if (user.getPassword() == null || !user.getPassword().equals(loginPasswordCommand.password())) {
+        String truePassword = userRepository.findByEmail(user.getEmail()).getPassword();
+        if (!password.equals(truePassword)) {
             throw new PasswordErrException();
         }
         return getUserLoginResult(user);
     }
 
-    //keypoint: 登录
+    //keypoint: 登出
+    public void logout(String token) {
+        stringRedisTemplate.opsForHash().delete(LOGIN_USER_KEY + token, "id");
+    }
+
+
+    //keypoint: 储存登录信息
     private UserLoginResult getUserLoginResult(User user) {
         String token = UUID.randomUUID().toString(true);
         UserBasicCommand userBasicCommand = new UserBasicCommand(user.getId(), user.getNikeName(), user.getIcon());
@@ -88,10 +96,4 @@ public class UserLoginApplicationService {
         stringRedisTemplate.expire(LOGIN_USER_KEY + token, LOGIN_USER_TTL, MINUTES);
         return new UserLoginResult(token);
     }
-
-    public void logout(String token) {
-        System.out.println(token);
-        stringRedisTemplate.opsForHash().delete(LOGIN_USER_KEY + token, "id");
-    }
-
 }

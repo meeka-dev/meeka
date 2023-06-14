@@ -34,6 +34,12 @@ public class UserCommandRestController {
         return userLoginApplicationService.userLoginWithCode(command);
     }
 
+    @PostMapping("/loginWithPassword")
+    public UserLoginResult userLoginWithPassword(@RequestBody LoginPasswordRequest loginPasswordRequest) throws PasswordErrException {
+        LoginPasswordCommand command = new LoginPasswordCommand(loginPasswordRequest.email(), loginPasswordRequest.password());
+        return userLoginApplicationService.userLoginWithPassword(command);
+    }
+
     @PostMapping("/code")
     public void sendCode(@RequestParam("email") String email) throws InvalidUserInfoException {
         userLoginApplicationService.sendCodeByEmail(email);
@@ -47,11 +53,5 @@ public class UserCommandRestController {
     @GetMapping("/{id}")
     public PersonalCenterResult getUserInformation(@PathVariable("id") Long id) throws UserNotFoundException {
         return userHomePageApplicationService.getUserInformation(id);
-    }
-
-    @PostMapping("/loginWithPs")
-    public UserLoginResult userLoginWithPassword(@RequestBody LoginPasswordRequest loginPasswordRequest) throws PasswordErrException {
-        LoginPasswordCommand loginPasswordCommand = new LoginPasswordCommand(loginPasswordRequest.email(), loginPasswordRequest.password());
-        return userLoginApplicationService.userLoginWithPassword(loginPasswordCommand);
     }
 }

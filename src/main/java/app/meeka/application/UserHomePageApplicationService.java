@@ -4,7 +4,7 @@ package app.meeka.application;
 import app.meeka.application.result.PersonalCenterResult;
 import app.meeka.core.context.UserHolder;
 import app.meeka.domain.exception.UserNotFoundException;
-import app.meeka.domain.model.User;
+import app.meeka.domain.model.user.User;
 import app.meeka.domain.repository.UserRepository;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,6 @@
 package app.meeka.application.result;
 
-import app.meeka.domain.model.User;
+import app.meeka.domain.model.user.User;
 
 import java.time.OffsetDateTime;
 
