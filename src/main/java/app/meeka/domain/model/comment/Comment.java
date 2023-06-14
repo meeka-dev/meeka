@@ -37,8 +37,8 @@ public class Comment {
         }
         this.userId = info.userId();
         this.postId = info.postId();
-        this.parentId = null;
-        this.answerId = null;
+        this.parentId = info.parentId();
+        this.answerId = info.answerId();
         this.content = info.content();
         this.liked = 0;
         this.status = true;
@@ -49,6 +49,12 @@ public class Comment {
     @PersistenceCreator
     protected Comment() {
 
+    }
+
+    public void updateLiked(boolean isLiked) {
+        if (isLiked) {
+            this.liked--;
+        } else this.liked++;
     }
 
     public Long getId() {
