@@ -23,6 +23,7 @@ public class Post {
     @Enumerated(EnumType.ORDINAL)
     private Status status;
     private String content;
+    private int browse;
     private OffsetDateTime createdAt;
     private OffsetDateTime lastEditedAt;
 
@@ -36,6 +37,7 @@ public class Post {
         this.content = info.content();
         this.status = Status.UNPUBLISHED;
         this.favours = 0;
+        this.browse = 0;
         this.createdAt = now();
         this.lastEditedAt = this.createdAt;
     }
@@ -50,6 +52,32 @@ public class Post {
 
     public enum Status {
         UNPUBLISHED, PUBLIC, PRIVATE
+    }
+
+    public int getBrowse() {
+        return browse;
+    }
+
+    public void updateFavours(boolean isLiked) {
+        if (isLiked) {
+            this.favours--;
+        } else this.favours++;
+    }
+
+    public void updateBrowse() {
+        this.browse++;
+    }
+
+    public void setCover(String cover) {
+        this.cover = cover;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public PostInfo getInfo() {

@@ -1,6 +1,7 @@
-package app.meeka.utils;
+package app.meeka.core.rest;
 
 import app.meeka.application.command.UserBasicCommand;
+import app.meeka.core.context.UserHolder;
 import cn.hutool.core.util.StrUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,8 +11,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.Map;
 
-import static app.meeka.utils.RedisConstants.LOGIN_USER_KEY;
-import static app.meeka.utils.RedisConstants.LOGIN_USER_TTL;
+import static app.meeka.core.cache.RedisConstants.LOGIN_USER_KEY;
+import static app.meeka.core.cache.RedisConstants.LOGIN_USER_TTL;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 @Component
