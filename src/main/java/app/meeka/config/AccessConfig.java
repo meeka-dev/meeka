@@ -1,7 +1,7 @@
 package app.meeka.config;
 
-import app.meeka.utils.LoginInterceptor;
-import app.meeka.utils.RefreshTokenInterceptor;
+import app.meeka.core.rest.LoginInterceptor;
+import app.meeka.core.rest.RefreshTokenInterceptor;
 import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;

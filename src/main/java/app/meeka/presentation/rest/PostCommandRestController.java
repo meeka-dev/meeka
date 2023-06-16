@@ -4,16 +4,18 @@ import app.meeka.application.PostCommandApplicationService;
 import app.meeka.application.command.CreatePostCommand;
 import app.meeka.application.command.DeletePostCommand;
 import app.meeka.application.command.EditPostInfoCommand;
+import app.meeka.application.result.PostResult;
 import app.meeka.domain.exception.InvalidPostInfoException;
-import app.meeka.domain.exception.PostNotFoundException;
 import app.meeka.presentation.rest.request.CreatePostRequest;
 import app.meeka.presentation.rest.request.DeletePostRequest;
 import app.meeka.presentation.rest.request.EditPostInfoRequest;
 import app.meeka.presentation.rest.response.PostCreatedResponse;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/post")
@@ -33,14 +35,25 @@ public class PostCommandRestController {
     }
 
     @PostMapping("/delete-post")
-    public void deletePost(DeletePostRequest request) throws PostNotFoundException {
+    public void deletePost(DeletePostRequest request) {
         var command = new DeletePostCommand(request.postId());
         postCommandApplicationService.deletePost(command);
     }
 
     @PostMapping("/edit-post-info")
-    public void editPostInfo(EditPostInfoRequest request) throws InvalidPostInfoException, PostNotFoundException {
+    public void editPostInfo(EditPostInfoRequest request) {
         var command = new EditPostInfoCommand(request.postId(), request.editedPostInfo());
         postCommandApplicationService.editPostInfo(command);
     }
+
+    @PostMapping("/getPostByAuthorId")
+    public List<PostResult> getPostByAuthorId(@RequestParam Long authorId, @PageableDefault(sort = "createTime", direction = Sort.Direction.DESC) Pageable pageable) {
+        return postCommandApplicationService.getPostByAuthorId(authorId, pageable);
+    }
+
+    @PostMapping("/getPostByPostId")
+    public PostResult getPostByPostId(@RequestParam Long postId) {
+        return postCommandApplicationService.getPostByPostId(postId);
+    }
+
 }
