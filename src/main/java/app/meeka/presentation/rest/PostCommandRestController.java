@@ -37,13 +37,11 @@ public class PostCommandRestController {
     @PostMapping("/delete-post")
     public void deletePost(DeletePostRequest request) {
         var command = new DeletePostCommand(request.postId());
-        postCommandApplicationService.deletePost(command);
     }
 
     @PostMapping("/edit-post-info")
     public void editPostInfo(EditPostInfoRequest request) {
         var command = new EditPostInfoCommand(request.postId(), request.editedPostInfo());
-        postCommandApplicationService.editPostInfo(command);
     }
 
     @PostMapping("/getPostByAuthorId")

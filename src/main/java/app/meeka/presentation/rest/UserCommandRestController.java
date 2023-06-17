@@ -9,7 +9,7 @@ import app.meeka.application.result.PersonalCenterResult;
 import app.meeka.application.result.UserLoginResult;
 import app.meeka.domain.exception.InvalidCodeException;
 import app.meeka.domain.exception.InvalidUserInfoException;
-import app.meeka.domain.exception.PasswordErrException;
+import app.meeka.domain.exception.PasswordErrorException;
 import app.meeka.domain.exception.UserNotFoundException;
 import app.meeka.presentation.rest.request.CreateUserRequest;
 import app.meeka.presentation.rest.request.LoginPasswordRequest;
@@ -35,7 +35,7 @@ public class UserCommandRestController {
     }
 
     @PostMapping("/loginWithPassword")
-    public UserLoginResult userLoginWithPassword(@RequestBody LoginPasswordRequest loginPasswordRequest) throws PasswordErrException {
+    public UserLoginResult userLoginWithPassword(@RequestBody LoginPasswordRequest loginPasswordRequest) throws PasswordErrorException {
         LoginPasswordCommand command = new LoginPasswordCommand(loginPasswordRequest.email(), loginPasswordRequest.password());
         return userLoginApplicationService.userLoginWithPassword(command);
     }

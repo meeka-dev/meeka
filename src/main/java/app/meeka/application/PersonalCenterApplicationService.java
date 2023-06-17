@@ -11,7 +11,6 @@ import app.meeka.domain.model.user.Follow;
 import app.meeka.domain.model.user.User;
 import app.meeka.domain.repository.FollowRepository;
 import app.meeka.domain.repository.UserRepository;
-import jakarta.annotation.Resource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -28,14 +27,14 @@ import static java.util.Collections.emptyList;
 @Service
 public class PersonalCenterApplicationService {
 
-    @Resource
-    private StringRedisTemplate stringRedisTemplate;
+    private final StringRedisTemplate stringRedisTemplate;
 
     private final UserRepository userRepository;
 
     private final FollowRepository followRepository;
 
-    public PersonalCenterApplicationService(UserRepository userRepository, FollowRepository followRepository) {
+    public PersonalCenterApplicationService(StringRedisTemplate stringRedisTemplate, UserRepository userRepository, FollowRepository followRepository) {
+        this.stringRedisTemplate = stringRedisTemplate;
         this.userRepository = userRepository;
         this.followRepository = followRepository;
     }
@@ -57,7 +56,7 @@ public class PersonalCenterApplicationService {
         );
     }
 
-    //keypoint: 关注/取关
+    // keypoint: 关注/取关
     public void toggleFollowState(Long followingUserId) throws InvalidFollowOperationException {
         var currentUser = UserHolder.getUser();
         if (Objects.equals(followingUserId, currentUser.getId())) throw new InvalidFollowOperationException();
