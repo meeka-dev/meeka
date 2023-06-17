@@ -1,6 +1,6 @@
 package app.meeka.presentation.rest;
 
-import app.meeka.application.SetUpApplicationService;
+import app.meeka.application.PersonalSettingsApplicationService;
 import app.meeka.application.command.CreateUserCommand;
 import app.meeka.domain.exception.*;
 import app.meeka.presentation.rest.request.CreateUserRequest;
@@ -8,57 +8,57 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/setUp")
-public class SetUpRestController {
+public class PersonalSettingsCommandRestController {
 
-    private final SetUpApplicationService setUpApplicationService;
+    private final PersonalSettingsApplicationService personalSettingsApplicationService;
 
-    public SetUpRestController(SetUpApplicationService setUpApplicationService) {
-        this.setUpApplicationService = setUpApplicationService;
+    public PersonalSettingsCommandRestController(PersonalSettingsApplicationService personalSettingsApplicationService) {
+        this.personalSettingsApplicationService = personalSettingsApplicationService;
     }
 
     @PostMapping("/createPassword")
     public void createPassword(@RequestParam("password") String password) throws InvalidPasswordFormatException {
-        setUpApplicationService.createPassword(password);
+        personalSettingsApplicationService.createPassword(password);
     }
 
     @PostMapping("/updatePassword")
     public void updatePassword(@RequestBody CreateUserRequest userRequest, @RequestParam("newPassword") String newPassword) throws InvalidCodeException, MismatchedEmailBindingException, InvalidPasswordFormatException {
         CreateUserCommand command = new CreateUserCommand(userRequest.email(), userRequest.code());
-        setUpApplicationService.updatePassword(command, newPassword);
+        personalSettingsApplicationService.updatePassword(command, newPassword);
     }
 
     @PostMapping("/updateBirthday")
     public void updateBirthday(@RequestParam("birthday") String birthdayStr) {
-        setUpApplicationService.updateBirthday(birthdayStr);
+        personalSettingsApplicationService.updateBirthday(birthdayStr);
     }
 
     @PostMapping("/updateGender")
     public void updateGender(@RequestParam("gender") String gender) throws InvalidUserInfoException {
-        setUpApplicationService.updateGender(gender);
+        personalSettingsApplicationService.updateGender(gender);
     }
 
     @PostMapping("/updateCity")
     public void updateCity(@RequestParam("city") String city) {
-        setUpApplicationService.updateCity(city);
+        personalSettingsApplicationService.updateCity(city);
     }
 
     @PostMapping("/updateNickName")
     public void updateNickName(@RequestParam("nickName") String nikeName) throws InvalidUsernameFormatException {
-        setUpApplicationService.updateNickName(nikeName);
+        personalSettingsApplicationService.updateNickName(nikeName);
     }
 
     @PostMapping("/updateIntroduce")
     public void updateIntroduce(@RequestParam("introduce") String introduce) {
-        setUpApplicationService.updateIntroduce(introduce);
+        personalSettingsApplicationService.updateIntroduce(introduce);
     }
 
     @PostMapping("/updatePasswordCode")
     public void updatePasswordCode(@RequestParam("email") String email) {
-        setUpApplicationService.updatePasswordCode(email);
+        personalSettingsApplicationService.updatePasswordCode(email);
     }
 
     @PostMapping("/updateIcon")
     public void updateIcon(@RequestParam("icon") String icon) {
-        setUpApplicationService.updateIcon(icon);
+        personalSettingsApplicationService.updateIcon(icon);
     }
 }

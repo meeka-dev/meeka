@@ -26,13 +26,13 @@ import static java.util.Objects.isNull;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 @Service
-public class SetUpApplicationService {
+public class PersonalSettingsApplicationService {
 
     private final UserRepository userRepository;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
-    public SetUpApplicationService(UserRepository userRepository) {
+    public PersonalSettingsApplicationService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
