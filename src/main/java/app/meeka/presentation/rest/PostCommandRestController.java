@@ -37,21 +37,22 @@ public class PostCommandRestController {
     @PostMapping("/delete-post")
     public void deletePost(DeletePostRequest request) {
         var command = new DeletePostCommand(request.postId());
+        postCommandApplicationService.deletePost(command);
     }
 
     @PostMapping("/edit-post-info")
     public void editPostInfo(EditPostInfoRequest request) {
         var command = new EditPostInfoCommand(request.postId(), request.editedPostInfo());
+        postCommandApplicationService.editPostInfo(command);
     }
 
-    @PostMapping("/getPostByAuthorId")
+    @PostMapping("/query-posts-by-author-id")
     public List<PostResult> getPostByAuthorId(@RequestParam Long authorId, @PageableDefault(sort = "createTime", direction = Sort.Direction.DESC) Pageable pageable) {
         return postCommandApplicationService.getPostByAuthorId(authorId, pageable);
     }
 
-    @PostMapping("/getPostByPostId")
+    @PostMapping("/query-post-by-id")
     public PostResult getPostByPostId(@RequestParam Long postId) {
         return postCommandApplicationService.getPostByPostId(postId);
     }
-
 }
