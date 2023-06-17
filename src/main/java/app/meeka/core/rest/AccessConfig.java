@@ -1,4 +1,4 @@
-package app.meeka.config;
+package app.meeka.core.rest;
 
 import app.meeka.core.rest.LoginInterceptor;
 import app.meeka.core.rest.RefreshTokenInterceptor;

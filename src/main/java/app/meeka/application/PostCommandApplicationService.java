@@ -7,6 +7,7 @@ import app.meeka.application.command.UserBasicCommand;
 import app.meeka.application.result.PostCreatedResult;
 import app.meeka.application.result.PostResult;
 import app.meeka.core.context.UserHolder;
+import app.meeka.domain.event.PostPublishedEvent;
 import app.meeka.domain.exception.InvalidPostInfoException;
 import app.meeka.domain.exception.UserNotLoginException;
 import app.meeka.domain.model.post.Post;
@@ -16,10 +17,8 @@ import app.meeka.domain.repository.PostRepository;
 import app.meeka.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -46,32 +45,15 @@ public class PostCommandApplicationService {
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
-    //keypoint: 新建post并推送postId给粉丝
+    // keypoint: 新建post并推送postId给粉丝
     public PostCreatedResult createPost(CreatePostCommand command) throws InvalidPostInfoException {
         var post = new Post(new PostInfo(command.authorId(), command.cover(), command.title(), command.content()));
-        var user = UserHolder.getUser();
-        PostResult postResult = new PostResult(
-                user.getId(),
-                user.getNickName(),
-                user.getIcon(),
-                post.getTitle(),
-                post.getCover(),
-                post.getContent(),
-                post.getFavours(),
-                post.getBrowse(),
-                isLiked(post.getId()),
-                Duration.between(post.getCreatedAt(), OffsetDateTime.now()).toDays() < 1
-                        ?
-                        Duration.between(post.getCreatedAt(), OffsetDateTime.now())
-                        :
-                        Duration.between(OffsetDateTime.parse("0000-01-01T00:00:00-8:00"), post.getCreatedAt())
-        );
         var savedPost = postRepository.save(post);
-        applicationEventPublisher.publishEvent(postResult);
+        applicationEventPublisher.publishEvent(new PostPublishedEvent(post.getId()));
         return new PostCreatedResult(savedPost.getId());
     }
 
-    //keypoint: 根据作者id分页查询post(携带完整信息，作者信息，浏览量，点赞,发布时间)
+    // keypoint: 根据作者id分页查询post(携带完整信息，作者信息，浏览量，点赞,发布时间)
     public List<PostResult> getPostByAuthorId(Long authorId, Pageable pageable) {
         String nickName = userRepository.findUserById(authorId).getNikeName();
         String icon = userRepository.findUserById(authorId).getIcon();
@@ -96,12 +78,12 @@ public class PostCommandApplicationService {
                 ).toList();
     }
 
-    //keypoint: 删除post
+    // keypoint: 删除post
     public void deletePost(DeletePostCommand command) {
         postRepository.deleteById(command.postId());
     }
 
-    //keypoint: 点赞post
+    // keypoint: 点赞post
     public void likePost(Long postId) throws UserNotLoginException {
         UserBasicCommand user = UserHolder.getUser();
         if (user == null) {
@@ -125,7 +107,7 @@ public class PostCommandApplicationService {
         }
     }
 
-    //keypoint: 当前用户是否已点赞
+    // keypoint: 当前用户是否已点赞
     public boolean isLiked(Long postId) {
         UserBasicCommand user = UserHolder.getUser();
         if (user == null) {
@@ -138,7 +120,7 @@ public class PostCommandApplicationService {
         return score != null;
     }
 
-    //keypoint: 根据postId查询具体post并统计浏览量
+    // keypoint: 根据postId查询具体post并统计浏览量
     public PostResult getPostByPostId(Long postId) {
         Post post = postRepository.findPostById(postId);
         User user = userRepository.findUserById(post.getAuthorId());
@@ -167,19 +149,12 @@ public class PostCommandApplicationService {
 
     }
 
-    //keypoint: 编辑post
+    // keypoint: 编辑post
     public void editPostInfo(EditPostInfoCommand command) {
         Post post = postRepository.findPostById(command.postId());
         post.setTitle(command.editedPostInfo().title());
         post.setCover(command.editedPostInfo().cover());
         post.setContent(command.editedPostInfo().content());
         postRepository.save(post);
-    }
-
-    //keypoint: 监听关注的作者发布的post
-    @EventListener
-    @Async("asyncExecutor")
-    public void listener() {
-
     }
 }

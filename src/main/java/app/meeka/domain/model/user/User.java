@@ -34,13 +34,12 @@ public class User {
     private OffsetDateTime updateTime;
 
     public static final String PASSWORD_REGEX = "^(?![a-zA-Z]+$)(?!\\d+$)(?![^\\da-zA-Z\s]+$).{6,12}$";
-    public static final String NICKNAME_REGEX = "^[\\u4e00-\\u9fa5a-zA-Z0-9]{6,12}$";
+    public static final String NICKNAME_REGEX = "^[\\u4e00-\\u9fa5a-zA-Z0-9]{2,12}$";
 
     @PersistenceCreator
     protected User() {
 
     }
-
 
     public Long getId() {
         return id;
@@ -168,5 +167,4 @@ public class User {
     public enum Gender {
         MALE, FEMALE, UNKNOWN
     }
-
 }
