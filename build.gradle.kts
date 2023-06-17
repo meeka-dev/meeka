@@ -2,6 +2,7 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
     java
+    checkstyle
     `java-test-fixtures`
     id("org.springframework.boot") version "3.0.6"
 }
