@@ -41,3 +41,8 @@ tasks {
         useJUnitPlatform()
     }
 }
+
+checkstyle {
+    maxWarnings = 0
+    toolVersion = "10.12.0"
+}
