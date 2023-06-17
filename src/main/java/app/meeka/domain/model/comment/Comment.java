@@ -54,7 +54,9 @@ public class Comment {
     public void updateLiked(boolean isLiked) {
         if (isLiked) {
             this.liked--;
-        } else this.liked++;
+        } else {
+            this.liked++;
+        }
     }
 
     public Long getId() {

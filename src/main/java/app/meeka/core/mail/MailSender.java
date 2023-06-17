@@ -28,9 +28,9 @@ public final class MailSender {
         try {
             final Properties props = new Properties();
             props.put("mail.smtp.auth", "true");
-//            注意发送邮件的方法中，发送给谁的，发送给对应的app，※
-//            要改成对应的app。扣扣的改成qq的，网易的要改成网易的。※
-//            props.put("mail.smtp.host", "smtp.qq.com");
+           // 注意发送邮件的方法中，发送给谁的，发送给对应的app，※
+           // 要改成对应的app。扣扣的改成qq的，网易的要改成网易的。※
+           // props.put("mail.smtp.host", "smtp.qq.com");
             props.put("mail.smtp.host", "smtp.qq.com");
 
             // 发件人的账号
@@ -56,14 +56,11 @@ public final class MailSender {
             String username = props.getProperty("mail.user");
             InternetAddress form = new InternetAddress(username);
             message.setFrom(form);
-
             // 设置收件人
             InternetAddress toAddress = new InternetAddress(to);
             message.setRecipient(Message.RecipientType.TO, toAddress);
-
             // 设置邮件标题
             message.setSubject(title);
-
             // 设置邮件的内容体
             message.setContent(text, "text/html;charset=UTF-8");
             // 发送邮件

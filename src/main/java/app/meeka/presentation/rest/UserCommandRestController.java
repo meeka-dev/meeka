@@ -1,6 +1,5 @@
 package app.meeka.presentation.rest;
 
-
 import app.meeka.application.UserHomePageApplicationService;
 import app.meeka.application.UserLoginApplicationService;
 import app.meeka.application.command.CreateUserCommand;
@@ -41,7 +40,7 @@ public class UserCommandRestController {
     }
 
     @PostMapping("/code")
-    public void sendCode(@RequestParam("email") String email) throws InvalidUserInfoException {
+    public void sendCode(@RequestParam("email") String email) {
         userLoginApplicationService.sendCodeByEmail(email);
     }
 

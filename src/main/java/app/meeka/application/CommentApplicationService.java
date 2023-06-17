@@ -23,24 +23,24 @@ public class CommentApplicationService {
         this.commentRepository = commentRepository;
     }
 
-    //keypoint: 分页获取文章一级评论
+    // keypoint: 分页获取文章一级评论
     public Page<Comment> getPostComments(Long postId, Pageable pageable) {
         return commentRepository.findByPostIdAndParentIdIsNull(postId, pageable);
     }
 
-    //keypoint: 按点赞量获取评论的子评论
+    // keypoint: 按点赞量获取评论的子评论
     public List<Comment> getChildCommentsByLiked(Long parentId) {
         Sort sort = Sort.by(Sort.Direction.DESC, "liked");
         return commentRepository.findByParentId(parentId, sort);
     }
 
-    //keypoint: 按发布时间获取评论的子评论
+    // keypoint: 按发布时间获取评论的子评论
     public List<Comment> getChildCommentsByTime(Long parentId) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         return commentRepository.findByParentId(parentId, sort);
     }
 
-    //keypoint: 发布评论
+    // keypoint: 发布评论
     public void createComment(CreateCommentCommand commentCommand) throws PostNotFoundException, LengthOutRangeException {
         CommentInfo info = new CommentInfo(
                 commentCommand.userId(),
@@ -53,7 +53,6 @@ public class CommentApplicationService {
         commentRepository.save(comment);
     }
 
-    //keypoint: 点赞评论
     public void likedComment(Long commentId, boolean isLiked) {
         Comment comment = commentRepository.findCommentById(commentId);
         comment.updateLiked(isLiked);

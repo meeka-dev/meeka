@@ -7,7 +7,6 @@ import app.meeka.application.command.UserBasicCommand;
 import app.meeka.application.result.PostCreatedResult;
 import app.meeka.application.result.PostResult;
 import app.meeka.core.context.UserHolder;
-import app.meeka.domain.event.PostPublishedEvent;
 import app.meeka.domain.exception.InvalidPostInfoException;
 import app.meeka.domain.exception.UserNotLoginException;
 import app.meeka.domain.model.post.Post;
@@ -16,7 +15,6 @@ import app.meeka.domain.model.user.User;
 import app.meeka.domain.repository.PostRepository;
 import app.meeka.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -36,20 +34,21 @@ public class PostCommandApplicationService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final StringRedisTemplate stringRedisTemplate;
-    private final ApplicationEventPublisher applicationEventPublisher;
 
-    public PostCommandApplicationService(PostRepository postRepository, UserRepository userRepository, StringRedisTemplate stringRedisTemplate, ApplicationEventPublisher applicationEventPublisher) {
+    public PostCommandApplicationService(
+            PostRepository postRepository,
+            UserRepository userRepository,
+            StringRedisTemplate stringRedisTemplate
+    ) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.stringRedisTemplate = stringRedisTemplate;
-        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     // keypoint: 新建post并推送postId给粉丝
     public PostCreatedResult createPost(CreatePostCommand command) throws InvalidPostInfoException {
         var post = new Post(new PostInfo(command.authorId(), command.cover(), command.title(), command.content()));
         var savedPost = postRepository.save(post);
-        applicationEventPublisher.publishEvent(new PostPublishedEvent(post.getId()));
         return new PostCreatedResult(savedPost.getId());
     }
 

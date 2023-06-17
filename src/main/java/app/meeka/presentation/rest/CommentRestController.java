@@ -39,7 +39,7 @@ public class CommentRestController {
     }
 
     @PostMapping("/liked")
-    public void likedComment(@RequestParam("id") Long commentId, @RequestParam("isLiked") boolean isLiked) {
+    public void likeComment(@RequestParam("id") Long commentId, @RequestParam("isLiked") boolean isLiked) {
         commentApplicationService.likedComment(commentId, isLiked);
     }
 
