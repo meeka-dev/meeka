@@ -35,12 +35,10 @@ public class PostCommandRestController {
     @PostMapping("/delete-post")
     public void deletePost(DeletePostRequest request) throws PostNotFoundException {
         var command = new DeletePostCommand(request.postId());
-        postCommandApplicationService.deletePost(command);
     }
 
     @PostMapping("/edit-post-info")
     public void editPostInfo(EditPostInfoRequest request) throws InvalidPostInfoException, PostNotFoundException {
         var command = new EditPostInfoCommand(request.postId(), request.editedPostInfo());
-        postCommandApplicationService.editPostInfo(command);
     }
 }
